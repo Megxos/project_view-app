@@ -3,7 +3,7 @@ import 'package:project_view/ui/colors.dart';
 
 ThemeData primaryTheme = new ThemeData(
     scaffoldBackgroundColor: Colors.white,
-    accentColor: Colors.indigo[300],
+    accentColor: Colors.pinkAccent,
     appBarTheme: AppBarTheme(
         elevation: 0,
         color: Colors.indigo[500],
@@ -22,8 +22,8 @@ ThemeData primaryTheme = new ThemeData(
         bodyText2: TextStyle(fontSize: 20,),
         bodyText1: TextStyle(fontSize: 20),
         subtitle1: TextStyle(fontSize: 20),
-        caption: TextStyle(fontSize: 15),
-        overline:TextStyle(fontSize: 20),
+        caption: TextStyle(fontSize: 12),
+        overline:TextStyle(fontSize: 18),
         button: TextStyle(fontSize: 20)
     ),
     tabBarTheme: TabBarTheme(
@@ -48,7 +48,21 @@ ThemeData primaryTheme = new ThemeData(
         )
     ),
     inputDecorationTheme: InputDecorationTheme(
-        contentPadding: EdgeInsets.all(10.0)
+        contentPadding: EdgeInsets.all(10.0),
+        filled: true,
+        fillColor: plainWhite,
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: secondaryColor,
+                width: 1.5
+            )
+        ),
+        border: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: secondaryColor,
+                width: 2
+            )
+        )
     ),
     canvasColor: Colors.white,
 );

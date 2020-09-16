@@ -29,6 +29,8 @@ dependencies:
   http: ^0.12.2
   fluttertoast: ^7.0.2
   loading_overlay: ^0.2.1
+  introduction_screen: ^1.0.9
+  flutter_svg: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -51,8 +53,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-#  assets:
-#    - assets/images
+  assets:
+    - assets/images/
+    - assets/svgs/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

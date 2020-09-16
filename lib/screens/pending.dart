@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:project_view/services/project_item.dart';
+import 'package:project_view/screens/completed.dart';
 
 class Pending extends StatefulWidget {
   @override
   _PendingState createState() => _PendingState();
 }
 
-class _PendingState extends State<Pending> {
-  List <ProjectItem> rows = [
-    ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-    ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ];
+List <ProjectItem> rows = [
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+];
 
+class _PendingState extends State<Pending> {
   final _formkey = GlobalKey<FormState>();
   final itemController = TextEditingController();
   final priceController = TextEditingController();
@@ -37,19 +48,42 @@ class _PendingState extends State<Pending> {
 
   bool _isSnackbarActive = false;
   bool _showCheckboxColumn  = false;
+  //  function to delete selected items
+  void deleteSelected()async{
+    for(int i = 0; i < selectedItems.length; i++){
+      print(selectedItems.length);
+      await rows.removeAt(rows.indexOf(selectedItems[i]));
+      selectedItems.remove(selectedItems[i]);
+    }
+    setState(() {
+      _isSnackbarActive = false;
+    });
+  }
+  void markComplete(){
+    for(int i = 0; i < selectedItems.length; i++){
+      items.insert(0, selectedItems[i]);
+      rows.removeAt(rows.indexOf(selectedItems[i]));
+      selectedItems.remove(selectedItems[i]);
+    }
+    setState(() {
+      _isSnackbarActive = false;
+    });
+  }
+  double navHeight = kBottomNavigationBarHeight;
+
+  // function to unselect items
+  void unselectItem(){
+    for(int i = 0; i < selectedItems.length; i++){
+      setState(() {
+        rows[rows.indexOf(selectedItems[i])].selected = false;
+        selectedItems.remove(selectedItems[i]);
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     int itemCount = rows.length;
     List <bool> selected = List<bool>.generate(itemCount, (index) => false);
-    // function to unselect items
-    void unselectItem(){
-      for(int i = 0; i < selectedItems.length; i++){
-        print(selectedItems[i]);
-        setState(() {
-          rows[rows.indexOf(selectedItems[i])].selected = false;
-          selectedItems.remove(selectedItems[i]);
-        });
-      }
-    }
 
     // function to manage selected items
     final actionSnackBar = SnackBar(
@@ -66,7 +100,10 @@ class _PendingState extends State<Pending> {
           Row(
             children: [
               FlatButton.icon(
-                  onPressed: (){},
+                  onPressed: (){
+                    deleteSelected();
+                    Scaffold.of(context).hideCurrentSnackBar();
+                  },
                   icon: Icon(Icons.delete),
                   label: Text("Delete selected")
               )
@@ -76,6 +113,7 @@ class _PendingState extends State<Pending> {
             children: [
               FlatButton.icon(
                   onPressed: (){
+                    markComplete();
                     Scaffold.of(context).hideCurrentSnackBar();
                   },
                   icon: Icon(Icons.done),
@@ -88,6 +126,9 @@ class _PendingState extends State<Pending> {
             children: [
               FlatButton.icon(
                   onPressed: (){
+                    setState(() {
+                      _isSnackbarActive = false;
+                    });
                     Scaffold.of(context).hideCurrentSnackBar();
                   },
                   icon: Icon(Icons.close),
@@ -158,10 +199,12 @@ class _PendingState extends State<Pending> {
                 validator: (value)=> value.length < 3 ? "min of 3 characters" : null,
                 maxLength: 25,
                 decoration: InputDecoration(
+                  counterText: '',
                     hintText: "Cement",
                     labelText: "Item"
                 ),
               ),
+              SizedBox(height: 10,),
               TextFormField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
@@ -175,10 +218,11 @@ class _PendingState extends State<Pending> {
                   }
                 },
                 decoration: InputDecoration(
-                  labelText: "Price",
+                    labelText: "Price",
                     hintText: "5,000"
                 ),
               ),
+              SizedBox(height: 10,),
               TextFormField(
                 controller: quantityController,
                 keyboardType: TextInputType.number,
@@ -193,7 +237,7 @@ class _PendingState extends State<Pending> {
                 },
                 decoration: InputDecoration(
                     hintText: "3",
-                  labelText: "Quantity"
+                    labelText: "Quantity"
                 ),
               ),
             ]
@@ -205,48 +249,54 @@ class _PendingState extends State<Pending> {
     final donateDialog = AlertDialog(
       title: Text("Account details"),
       content: Stack(
-        overflow: Overflow.visible,
-        children: [
-          Positioned(
-            top: -120,
-            right: 75,
-            child: InkResponse(
-              child: FlatButton(
-                onPressed: (){
-                  Navigator.of(context).pop();
-                },
-                child: CircleAvatar(
-                  child: Icon(Icons.close),
-                ),
-              )
-            ),
-          ),
-          Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          overflow: Overflow.visible,
           children: [
-            Text("Bank: GTB"),
-            Text("Account No: 0463040482"),
-            Text("Account Name: Micah Iliya")
-          ],
-        ),
-        ]
+            Positioned(
+              top: -120,
+              right: 75,
+              child: InkResponse(
+                  child: FlatButton(
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: CircleAvatar(
+                      child: Icon(Icons.close),
+                    ),
+                  )
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Bank: GTB"),
+                Text("Account No: 0463040482"),
+                Text("Account Name: Micah Iliya")
+              ],
+            ),
+          ]
       ),
     );
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: 2.0,),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.676,
+
+    return Column(
+      children: [
+        SizedBox(height: 2.0,),
+        GestureDetector(
+          onTap: (){
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 40 - 67 - 90 - MediaQuery.of(context).padding.top,
             width: double.infinity,
             child: SingleChildScrollView(
               child: DataTable(
+                sortColumnIndex: 2,
+                sortAscending: true,
                 showCheckboxColumn: _showCheckboxColumn,
                 columns: [
                   DataColumn(label: Text("Item", textAlign: TextAlign.center, textScaleFactor: 1.3, style: TextStyle(fontWeight: FontWeight.bold),),),
-                  DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)),),
-                  DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)),),
+                  DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
+                  DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
                 ],
                 rows: List<DataRow>.generate(itemCount, (index) => DataRow(
                     selected: rows[index].selected,
@@ -256,52 +306,75 @@ class _PendingState extends State<Pending> {
                     cells: [
                       DataCell(Text(rows[index].item),),
                       DataCell(Text("${rows[index].price}")),
-                      DataCell(Text("${rows[index].quantity}"),showEditIcon: true,onTap: (){})
+                      // DataCell(Text("${rows[index].quantity}"), showEditIcon: true,)
+                      DataCell(
+                          TextFormField(
+                            initialValue: "${rows[index].quantity}",
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.right,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none
+                              ),
+                              border: InputBorder.none
+                            ),
+                            onFieldSubmitted: (val) => {
+                              rows[index].quantity = int.parse(val)
+                            },
+                            style: TextStyle().copyWith(fontSize: 15),
+                          ), showEditIcon: true)
+                      // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
                     ]
                 ))
               )
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: ButtonTheme(
-                  child: FlatButton(
-                    onPressed: (){
-                      showDialog(context: context, builder: (context)=> donateDialog);
-                    },
-                    child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
-                    color: Colors.indigo[500],
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0)
-                  ),
-                  buttonColor: Colors.indigo[500],
-                ),
-              ),
-              SizedBox(width: 4,),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(child: OutlineButton(
+        ),
+        SizedBox(
+          height: 40,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ButtonTheme(
+                    child: FlatButton(
                       onPressed: (){
-                        showDialog(context: context, builder: (context)=> itemDialog);
+                        showDialog(context: context, builder: (context)=> donateDialog);
                       },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)
-                      ),
-                      child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
-                      borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
-                    )
+                      child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
+                      color: Colors.indigo[500],
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
                     ),
-                  ],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)
+                    ),
+                    buttonColor: Colors.indigo[500],
+                  ),
                 ),
-              )
-            ],
-          )
-        ],
-      ),
+                SizedBox(width: 4,),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(child: OutlineButton(
+                        onPressed: (){
+                          showDialog(context: context, builder: (context)=> itemDialog);
+                        },
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)
+                        ),
+                        child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
+                        borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
+                      )
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_view/screens/pending.dart';
 import 'package:project_view/screens/new_project.dart';
 import 'package:project_view/ui/custom_appbar.dart';
+import 'package:project_view/screens/completed.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -9,8 +10,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   final GlobalKey _scaffoldKey = new GlobalKey();
+
   int _selectedIndex = 0;
+
   void _onItemTapped(int index){
     setState(() {
       _selectedIndex = index;
@@ -30,14 +34,13 @@ class _HomeState extends State<Home> {
 
   List<Widget> _widgetOptions = [
     Pending(),
-    Text("Completed")
+    Completed()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
       drawer: Drawer(
         elevation: 0,
         child: ListView(
@@ -82,34 +85,32 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          CustomAppBar(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-            child: Column(
-              children: [
-                SingleChildScrollView(child: _widgetOptions.elementAt(_selectedIndex)),
-              ],
-            ),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            CustomAppBar(),
+            _widgetOptions.elementAt(_selectedIndex)
+          ],
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.hourglass_empty, color: Colors.indigo[500],),
-                title: Text("Pending", style: TextStyle(color: Colors.indigo[500]),),
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.done, color: Colors.indigo[500],),
-                title: Text("Completed", style: TextStyle(color: Colors.indigo[500]),
-                ))
-      ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        unselectedFontSize: 20,
+      bottomNavigationBar: SizedBox(
+        height: 67,
+        child: BottomNavigationBar(
+            items: [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.hourglass_empty, color: Colors.indigo[500],),
+                  title: Text("Pending", style: TextStyle(color: Colors.indigo[500]),),
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.done, color: Colors.indigo[500],),
+                  title: Text("Completed", style: TextStyle(color: Colors.indigo[500]),
+                  ))
+        ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          unselectedFontSize: 20,
+        ),
       ),
     );
   }

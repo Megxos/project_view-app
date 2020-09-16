@@ -15,21 +15,22 @@ newProject(Project project){
   _CustomAppBarState().reassemble();
 }
 
+
 class _CustomAppBarState extends State<CustomAppBar> {
   String dropDownText = "Project";
-
+  final _containerKey = GlobalKey();
   Project currentProject;
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 90.0,
+      key: _containerKey,
       decoration: BoxDecoration(
           gradient: LinearGradient(colors: [Colors.indigo[500], Colors.blue])
       ),
       child: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+          // padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
