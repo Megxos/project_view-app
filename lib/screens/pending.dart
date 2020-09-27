@@ -13,13 +13,6 @@ List <ProjectItem> rows = [
   ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
   ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
   ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
 ];
 
 class _PendingState extends State<Pending> {
@@ -27,6 +20,8 @@ class _PendingState extends State<Pending> {
   final itemController = TextEditingController();
   final priceController = TextEditingController();
   final quantityController = TextEditingController();
+
+  bool isProjectOwner = true;
 
   @override
   List <ProjectItem> selectedItems;
@@ -51,7 +46,6 @@ class _PendingState extends State<Pending> {
   //  function to delete selected items
   void deleteSelected()async{
     for(int i = 0; i < selectedItems.length; i++){
-      print(selectedItems.length);
       await rows.removeAt(rows.indexOf(selectedItems[i]));
       selectedItems.remove(selectedItems[i]);
     }
@@ -59,6 +53,7 @@ class _PendingState extends State<Pending> {
       _isSnackbarActive = false;
     });
   }
+
   void markComplete(){
     for(int i = 0; i < selectedItems.length; i++){
       items.insert(0, selectedItems[i]);
@@ -304,15 +299,16 @@ class _PendingState extends State<Pending> {
                       selectItem(value, index, rows[index]);
                     },
                     cells: [
-                      DataCell(Text(rows[index].item),),
+                      DataCell(Text("${rows[index].item}"),),
                       DataCell(Text("${rows[index].price}")),
-                      // DataCell(Text("${rows[index].quantity}"), showEditIcon: true,)
                       DataCell(
                           TextFormField(
                             initialValue: "${rows[index].quantity}",
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.right,
                             decoration: InputDecoration(
+                              filled: false,
+                              contentPadding: EdgeInsets.zero,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide.none
                               ),
@@ -322,7 +318,7 @@ class _PendingState extends State<Pending> {
                               rows[index].quantity = int.parse(val)
                             },
                             style: TextStyle().copyWith(fontSize: 15),
-                          ), showEditIcon: true)
+                          ), showEditIcon: isProjectOwner)
                       // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
                     ]
                 ))
@@ -336,15 +332,39 @@ class _PendingState extends State<Pending> {
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
             child: Row(
               children: [
-                Expanded(
+                isProjectOwner ? Expanded(child: GestureDetector(
+                  onLongPress: (){
+                    setState(() {
+                      isProjectOwner = false;
+                    });
+                  },
+                  child: OutlineButton(
+                    onPressed: (){
+                      showDialog(context: context, builder: (context)=> itemDialog);
+                    },
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)
+                    ),
+                    child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
+                    borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
+                  ),
+                )
+                ) : Expanded(
                   child: ButtonTheme(
-                    child: FlatButton(
-                      onPressed: (){
-                        showDialog(context: context, builder: (context)=> donateDialog);
+                    child: GestureDetector(
+                      onLongPress: (){
+                        setState(() {
+                          isProjectOwner = true;
+                        });
                       },
-                      child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
-                      color: Colors.indigo[500],
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
+                      child: FlatButton(
+                        onPressed: (){
+                          showDialog(context: context, builder: (context)=> donateDialog);
+                        },
+                        child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
+                        color: Colors.indigo[500],
+                        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
+                      ),
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0)
@@ -352,24 +372,6 @@ class _PendingState extends State<Pending> {
                     buttonColor: Colors.indigo[500],
                   ),
                 ),
-                SizedBox(width: 4,),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(child: OutlineButton(
-                        onPressed: (){
-                          showDialog(context: context, builder: (context)=> itemDialog);
-                        },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)
-                        ),
-                        child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
-                        borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
-                      )
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
           ),

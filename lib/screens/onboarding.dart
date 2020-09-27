@@ -10,7 +10,7 @@ class OnBoarding extends StatelessWidget {
       title: "Be Your Own Project Manager",
       body: "Managing projects has never been this easy",
       image: Center(
-        child: SvgPicture.asset("assets/svgs/construction-manager.svg"),
+        child: SvgPicture.asset("assets/svgs/organizing-projects.svg"),
       ),
       decoration: PageDecoration(
         imageFlex: 2,
@@ -28,10 +28,10 @@ class OnBoarding extends StatelessWidget {
       )
     ),
     PageViewModel(
-        title: "Easy",
-        body: "Let people contribute in bits",
+        title: "Get Helping Hands",
+        body: "Let people contribute to your project in bits",
         image: Center(
-          child: SvgPicture.asset("assets/svgs/brick.svg"),
+          child: SvgPicture.asset("assets/svgs/Connecting-teams.svg"),
         ),
         decoration: PageDecoration(
             imageFlex: 2,
@@ -47,7 +47,28 @@ class OnBoarding extends StatelessWidget {
                 )
             )
         )
-    )
+    ),
+    PageViewModel(
+        title: "All In One",
+        body: "Manage all your projects in one place",
+        image: Center(
+          child: SvgPicture.asset("assets/svgs/app.svg"),
+        ),
+        decoration: PageDecoration(
+            imageFlex: 2,
+            imagePadding: EdgeInsets.zero,
+            titleTextStyle: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
+            bodyTextStyle: TextStyle().copyWith(color: plainWhite),
+            boxDecoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    colors: [
+                      primaryColor, secondaryColor
+                    ]
+                )
+            )
+        )
+    ),
   ];
 
   @override
@@ -55,6 +76,7 @@ class OnBoarding extends StatelessWidget {
     return Scaffold(
       body: IntroductionScreen(
           pages: pages,
+          globalBackgroundColor: secondaryColor,
           showNextButton: true,
           next: Icon(Icons.arrow_forward_ios, color: plainWhite,),
           showSkipButton: true,

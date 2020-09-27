@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'package:project_view/ui/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/services/email_validator.dart';
+import 'package:project_view/controllers/user.controller.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -13,17 +18,54 @@ class _SignUpState extends State<SignUp> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
-  // signup function
 
-  void signup(){
+  final User user = User();
+
+  final progressDialog = AlertDialog(
+      backgroundColor: Colors.transparent,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(appAccent),
+            strokeWidth: 9,
+          ),
+          Text("Please wait...", style: TextStyle().copyWith(color: plainWhite),)
+        ],
+      ));
+
+  // signup function
+  void signup() async{
     if(_formkey.currentState.validate()){
-      Navigator.pushNamed(context, "/");
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => progressDialog
+      );
+      Response response = await user.signup(emailController.text, passwordController.text);
+      Map body = jsonDecode(response.body);
+      if(response.statusCode != 201){
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+            msg: body["error"]["description"],
+            gravity: ToastGravity.TOP,
+            toastLength: Toast.LENGTH_LONG,
+            backgroundColor: red,
+            fontSize: 20.0,
+         );
+      }
+
+      else{
+
+      }
+      // Navigator.pushNamed(context, "/account");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: (){
           FocusScope.of(context).requestFocus(FocusNode());
@@ -51,10 +93,10 @@ class _SignUpState extends State<SignUp> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        height: 200,
+                        height: 190,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.vertical(top: Radius.zero, bottom: Radius.circular(200.0)),
+                          borderRadius: BorderRadius.vertical(top: Radius.zero, bottom: Radius.circular(190.0)),
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomRight,
@@ -72,16 +114,16 @@ class _SignUpState extends State<SignUp> {
                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         child: Column(
                           children: [
+                            Align(alignment: Alignment.centerLeft,child: Text("Email: ", style: TextStyle().copyWith(color: Colors.grey[800]))),
                             TextFormField(
                               controller: emailController,
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) => isValidEmail(emailController.text) ? null : "invalid email",
                               decoration: InputDecoration(
-                                  labelText: "Email",
-                                  hintText: "email"
                               ),
                             ),
                             SizedBox(height: 15.0,),
+                            Align(alignment: Alignment.centerLeft,child: Text("Password: ", style: TextStyle().copyWith(color: Colors.grey[800]))),
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
@@ -90,11 +132,10 @@ class _SignUpState extends State<SignUp> {
                               validator: (value) => value.length < 6 ? "min of 6 characters" : null,
                               decoration: InputDecoration(
                                 counterText: '',
-                                  labelText: "Password",
-                                  hintText: "password"
                               ),
                             ),
                             SizedBox(height: 15.0,),
+                            Align(alignment: Alignment.centerLeft,child: Text("Confirm Password: ", style: TextStyle().copyWith(color: Colors.grey[800]))),
                             TextFormField(
                               controller: passwordConfirmController,
                               obscureText: true,
@@ -103,8 +144,6 @@ class _SignUpState extends State<SignUp> {
                               validator: (value) => value != passwordController.text ? "passwords don't match": null,
                               decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: "Confirm Password",
-                                  hintText: "re-enter password"
                               ),
                             ),
                             SizedBox(height: 15.0,),
@@ -112,6 +151,7 @@ class _SignUpState extends State<SignUp> {
                               children: [
                                 Expanded(
                                   child: ButtonTheme(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(25.0),
@@ -123,7 +163,7 @@ class _SignUpState extends State<SignUp> {
                                           )
                                       ),
                                       child: FlatButton(
-                                        child: Text("Sign Up", style: TextStyle().copyWith(color: plainWhite),),
+                                        child: Text("Sign Up", style: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold),),
                                         onPressed: (){
                                          signup();
                                         },
@@ -137,10 +177,10 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                       Container(
-                        height: 200,
+                        height: 190,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.vertical(bottom: Radius.zero, top: Radius.circular(200.0)),
+                            borderRadius: BorderRadius.vertical(bottom: Radius.zero, top: Radius.circular(190.0)),
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomRight,

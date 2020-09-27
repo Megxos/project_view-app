@@ -12,18 +12,6 @@ List <ProjectItem> items = [
   ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
   ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
   ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
 ];
 //MediaQuery.of(context).size.height - topBarHeight - bottomNavHeight - MediaQuery.of(context).padding.top,
 class _CompletedState extends State<Completed> {

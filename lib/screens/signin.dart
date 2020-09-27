@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/services/email_validator.dart';
+import 'package:project_view/controllers/user.controller.dart';
+import 'package:project_view/models/user.dart';
 
 class Signin extends StatefulWidget {
   @override
@@ -10,15 +16,62 @@ class Signin extends StatefulWidget {
 class _SigninState extends State<Signin> {
   final _formkey = GlobalKey<FormState>();
 
+  final userBox = Hive.box<UserModel>("user");
+
   final emailController = TextEditingController();
 
   final usernameController = TextEditingController();
 
   final passwordController = TextEditingController();
 
-  void signin(){
+  final User user = User();
+
+  final progressDialog = AlertDialog(
+      backgroundColor: Colors.transparent,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(appAccent),
+            strokeWidth: 9,
+          ),
+          Text("Please wait...", style: TextStyle().copyWith(color: plainWhite),)
+        ],
+      ));
+
+  void signin()async{
     if(_formkey.currentState.validate()){
-      Navigator.pushNamed(context, "/");
+      showDialog(
+        barrierDismissible: false,
+          context: context,
+          builder: (context)=> progressDialog
+      );
+      Response response = await user.login(emailController.text, passwordController.text);
+      Map body = jsonDecode(response.body);
+      if(response.statusCode != 200){
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+          msg: body["error"]["description"],
+          gravity: ToastGravity.TOP,
+          toastLength: Toast.LENGTH_LONG,
+          backgroundColor: red,
+          fontSize: 20.0,
+        );
+      }
+
+      final Map data = jsonDecode(response.body)["data"]["user"];
+      UserModel newUser = UserModel(
+          email: data["email"],
+          user_id: data["user_id"],
+          firstname: data["firstname"],
+          lastname: data["lastname"]
+      );
+      await userBox.clear();
+      userBox.add(newUser);
+
+
+      Navigator.pop(context);
+      Navigator.pushNamed(context, "/home");
     }
   }
 
@@ -49,6 +102,7 @@ class _SigninState extends State<Signin> {
                 child: Form(
                   key: _formkey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
@@ -66,23 +120,24 @@ class _SigninState extends State<Signin> {
                             )
                         ),
                         child: Center(
-                          child: Text("Sign In", style: TextStyle().copyWith(color: plainWhite, fontSize: 45.0, fontWeight: FontWeight.bold),),
+                          child: Text("Sign In", style: TextStyle().copyWith(fontFamily: "SFProText",color: plainWhite, fontSize: 45.0, fontWeight: FontWeight.bold),),
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            Align(alignment: Alignment.centerLeft,child: Text("Email: ", style: TextStyle().copyWith(color: Colors.grey[800]))),
                             TextFormField(
                               controller: emailController,
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) => isValidEmail(emailController.text) ? null : "invalid email",
                               decoration: InputDecoration(
-                                  labelText: "Email",
-                                  hintText: "email"
                               ),
                             ),
                             SizedBox(height: 15.0,),
+                            Align(alignment: Alignment.centerLeft,child: Text("Password: ", style: TextStyle().copyWith(color: Colors.grey[800]),)),
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
@@ -91,8 +146,6 @@ class _SigninState extends State<Signin> {
                               validator: (value) => value.length < 6 ? "min of 6 characters" : null,
                               decoration: InputDecoration(
                                   counterText: '',
-                                  labelText: "Password",
-                                  hintText: "password"
                               ),
                             ),
                             SizedBox(height: 15.0,),
@@ -100,6 +153,7 @@ class _SigninState extends State<Signin> {
                               children: [
                                 Expanded(
                                   child: ButtonTheme(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
                                     child: Container(
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(25.0),
@@ -111,7 +165,7 @@ class _SigninState extends State<Signin> {
                                           )
                                       ),
                                       child: FlatButton(
-                                        child: Text("Sign In", style: TextStyle().copyWith(color: plainWhite),),
+                                        child: Text("Sign In", style: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold),),
                                         onPressed: (){
                                           signin();
                                         },
@@ -121,6 +175,15 @@ class _SigninState extends State<Signin> {
                                 ),
                               ],
                             ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                FlatButton(
+                                  child: Text("forgot password?", style: TextStyle().copyWith(color: Colors.grey, fontSize: 18),),
+                                  onPressed: (){},
+                                )
+                              ],
+                            )
                           ],
                         ),
                       ),

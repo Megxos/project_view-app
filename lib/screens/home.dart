@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:project_view/screens/pending.dart';
 import 'package:project_view/screens/new_project.dart';
+import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/custom_appbar.dart';
 import 'package:project_view/screens/completed.dart';
+import 'package:project_view/screens/join_project.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -46,34 +48,99 @@ class _HomeState extends State<Home> {
         child: ListView(
           padding: EdgeInsets.all(0),
           children: [
-            DrawerHeader(
-              padding: EdgeInsets.fromLTRB(5, 10, 0, 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Project View", style: TextStyle(color: Colors.white, fontSize: 25)),
-                  IconButton(
-                    padding: EdgeInsets.all(0),
-                    tooltip: "Close drawer",
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.white,),
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Colors.indigo[500],
-                  Colors.blue
-                ])
+            Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: DrawerHeader(
+                padding: EdgeInsets.fromLTRB(5, 10, 0, 5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Project View", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold)),
+                        IconButton(
+                          padding: EdgeInsets.all(0),
+                          tooltip: "Close drawer",
+                          icon: Icon(Icons.arrow_back_ios, color: Colors.white,),
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: (){
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, "/profile");
+                              },
+                              child: Stack(
+                                overflow: Overflow.visible,
+                                children: [
+                                  Container(
+                                    child: CircleAvatar(
+                                      backgroundColor: secondaryColor,
+                                      child: Icon(Icons.person_outline, size: 50,),
+                                      radius: 50,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: -10,
+                                    right: -10,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit, color: Colors.white,), onPressed: () {  },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("melijah200@gmail.com", style: TextStyle().copyWith(color: plainWhite),)
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    Colors.indigo[500],
+                    Colors.blue
+                  ])
+                ),
               ),
             ),
             ListTile(title: Text("Add New Project"),leading: Icon(Icons.add),onTap: (){
               Navigator.pop(context);
               showDialog(context: context, builder: (context)=> NewProject());
             },),
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text("Join Project"),
+              onTap: (){
+                Navigator.pop(context);
+                showDialog(context: context, builder: (context) => JoinProject());
+              },
+            ),
+            ListTile(
+              title: Text("Update Account Details"),
+              leading: Icon(Icons.credit_card),
+              onTap: (){
+                Navigator.pushReplacementNamed(context, "/account");
+              },
+            ),
             ListTile(
               title: Text("About"),
               leading: Icon(Icons.info_outline),
@@ -94,7 +161,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       bottomNavigationBar: SizedBox(
-        height: 67,
+        height: 69,
         child: BottomNavigationBar(
             items: [
               BottomNavigationBarItem(

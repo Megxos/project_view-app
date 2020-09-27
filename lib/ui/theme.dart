@@ -19,12 +19,12 @@ ThemeData primaryTheme = new ThemeData(
     ),
     textTheme: TextTheme(
         headline6: TextStyle(fontSize: 20),
-        bodyText2: TextStyle(fontSize: 20,),
-        bodyText1: TextStyle(fontSize: 20),
+        bodyText2: TextStyle(fontSize: 20, fontFamily: "SFProText", color: darkTextColor),
+        bodyText1: TextStyle(fontSize: 20, fontFamily: "SFProText",),
         subtitle1: TextStyle(fontSize: 20),
         caption: TextStyle(fontSize: 12),
         overline:TextStyle(fontSize: 18),
-        button: TextStyle(fontSize: 20)
+        button: TextStyle(fontSize: 20, fontFamily: "SFProText")
     ),
     tabBarTheme: TabBarTheme(
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -36,7 +36,7 @@ ThemeData primaryTheme = new ThemeData(
       titleTextStyle: TextStyle(
         fontFamily: "SFProText",
           color: Colors.grey[900],
-          fontSize: 25
+          fontSize: 25,
       )
     ),
     snackBarTheme: SnackBarThemeData(
@@ -48,16 +48,17 @@ ThemeData primaryTheme = new ThemeData(
         )
     ),
     inputDecorationTheme: InputDecorationTheme(
-        contentPadding: EdgeInsets.all(10.0),
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
         filled: true,
-        fillColor: plainWhite,
+        fillColor: Color(0xe3e9e9e0),
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-                color: secondaryColor,
-                width: 1.5
+                width: 0,
+                color: Color(0xe3e9e9e0)
             )
         ),
         border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
             borderSide: BorderSide(
                 color: secondaryColor,
                 width: 2
@@ -65,6 +66,26 @@ ThemeData primaryTheme = new ThemeData(
         )
     ),
     canvasColor: Colors.white,
+);
+
+ThemeData darkTheme = new ThemeData(
+  accentColor: primaryTheme.accentColor,
+    appBarTheme: primaryTheme.appBarTheme,
+    scaffoldBackgroundColor: Colors.grey[900],
+   textTheme: primaryTheme.textTheme.copyWith(
+       headline6: primaryTheme.textTheme.headline6.copyWith(color: plainWhite),
+       bodyText2: primaryTheme.textTheme.bodyText2.copyWith(color: plainWhite),
+       bodyText1: primaryTheme.textTheme.bodyText1.copyWith(color: plainWhite),
+       subtitle1: primaryTheme.textTheme.subtitle1.copyWith(color: plainWhite),
+       subtitle2: primaryTheme.textTheme.subtitle2.copyWith(color: plainWhite),
+       caption: primaryTheme.textTheme.caption.copyWith(color: plainWhite),
+   ),
+    canvasColor: darkTextColor,
+    dialogTheme: primaryTheme.dialogTheme.copyWith(
+        titleTextStyle: TextStyle().copyWith(color: plainWhite),
+        backgroundColor: darkTextColor
+    ),
+    inputDecorationTheme: primaryTheme.inputDecorationTheme.copyWith(fillColor: Colors.grey[700]),
 );
 
 Color darkText = Colors.black;
