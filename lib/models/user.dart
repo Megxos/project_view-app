@@ -12,6 +12,8 @@ class UserModel{
   String lastname;
   @HiveField(3)
   String email;
+  @HiveField(4)
+  String token;
 
-  UserModel({ this.user_id, this.email, this.firstname, this.lastname });
+  UserModel({ this.user_id, this.email, this.firstname, this.lastname, this.token });
 }

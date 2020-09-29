@@ -16,11 +16,12 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ProjectModel()
-      ..id = fields[0] as int
-      ..name = fields[1] as String
-      ..code = fields[2] as int
-      ..owner = fields[3] as int;
+    return ProjectModel(
+      id: fields[0] as int,
+      name: fields[1] as String,
+      owner: fields[3] as int,
+      code: fields[2] as int,
+    );
   }
 
   @override

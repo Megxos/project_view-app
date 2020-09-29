@@ -1,4 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/account.dart';
+import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/main.dart';
 import 'package:project_view/ui/theme.dart';
@@ -10,14 +15,58 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  final userBox = Hive.box<UserModel>("user");
+
+  final accBox = Hive.box<AccountModel>("account");
+
   final _formkey = GlobalKey <FormState>();
 
   final firstnameController = TextEditingController();
   final lastnameController = TextEditingController();
 
   bool _switchState = true;
+
+  void signout(){
+    userBox.clear();
+    Navigator.pushNamed(context, "/signin");
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final currentUser = userBox.get(0);
+
+    String email = currentUser.email;
+
+    String firstname = currentUser.firstname;
+    String lastname = currentUser.lastname;
+
+    if(firstname == null || lastname == null){
+      firstname = "Not set";
+      lastname = "Not set";
+    }
+
+    final accDetails = accBox.get(0);
+    String acc_bank, acc_no, acc_name;
+
+    if(accDetails == null){
+      acc_bank = "Not set";
+      acc_no = "Not set";
+      acc_name = "Not set";
+    }else{
+      acc_bank = accDetails.acc_bank;
+      acc_no = accDetails.acc_no;
+      acc_name = accDetails.acc_name;
+    }
+
+    final signOutDialog = AlertDialog(
+      title: Text("Sign Out Now?"),
+      content: Text(email),
+      actions: [
+        FlatButton(onPressed: (){ Navigator.pop(context); }, child: Text("No", style: TextStyle().copyWith(color: secondaryColor),)),
+        FlatButton(onPressed: (){ signout(); }, child: Text("Yes", style: TextStyle().copyWith(color: red),))
+      ],
+    );
 
     final editProfile = AlertDialog(
       title: Text("Edit Profile"),
@@ -86,7 +135,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                   SizedBox(height: 10,),
-                  Text("melijah200@gmail.com"),
+                  Text(email),
                   SizedBox(height: 30,),
                  Container(
                    padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 0),
@@ -102,7 +151,7 @@ class _ProfileState extends State<Profile> {
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
                            Text("Firstname:"),
-                           Text(" Micah")
+                           Text(firstname, style: TextStyle().copyWith(color: lightGrey),)
                          ],
                        ),
                        SizedBox(height: 10,),
@@ -110,7 +159,7 @@ class _ProfileState extends State<Profile> {
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
                            Text("Lastname:"),
-                           Text(" Elijah")
+                           Text(lastname, style: TextStyle().copyWith(color: lightGrey))
                          ],
                        ),
                        SizedBox(height: 10.0,),
@@ -138,21 +187,21 @@ class _ProfileState extends State<Profile> {
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
                            Text("Name: "),
-                           Text("Micah Iliya")
+                           Text(acc_name, style: TextStyle().copyWith(color: lightGrey))
                          ],
                        ),
                        Row(
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
                            Text("Number: "),
-                           Text("0463040482")
+                           Text(acc_no, style: TextStyle().copyWith(color: lightGrey))
                          ],
                        ),
                        Row(
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
                            Text("Bank: "),
-                           Expanded(child: Text("Guaranty Trust Bank", overflow: TextOverflow.ellipsis, maxLines: 1, textAlign: TextAlign.right,))
+                           Expanded(child: Text(acc_bank, style: TextStyle().copyWith(color: lightGrey), overflow: TextOverflow.ellipsis, maxLines: 1, textAlign: TextAlign.right,))
                          ],
                        ),
                        SizedBox(height: 10,),
@@ -184,7 +233,9 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: FlatButton.icon(
                         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
-                          onPressed: (){},
+                          onPressed: (){
+                            showDialog(context: context, builder: (context) => signOutDialog);
+                          },
                           icon: Icon(Icons.power_settings_new, color: plainWhite,),
                           label: Text("Sign Out", style: TextStyle().copyWith(color: plainWhite),),
                       ),

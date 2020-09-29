@@ -7,6 +7,7 @@ import 'package:project_view/ui/colors.dart';
 import 'package:project_view/services/email_validator.dart';
 import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/user.dart';
+import 'package:project_view/ui/progress_indicator.dart';
 
 class Signin extends StatefulWidget {
   @override
@@ -26,26 +27,12 @@ class _SigninState extends State<Signin> {
 
   final User user = User();
 
-  final progressDialog = AlertDialog(
-      backgroundColor: Colors.transparent,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(appAccent),
-            strokeWidth: 9,
-          ),
-          Text("Please wait...", style: TextStyle().copyWith(color: plainWhite),)
-        ],
-      ));
-
   void signin()async{
     if(_formkey.currentState.validate()){
-      showDialog(
-        barrierDismissible: false,
-          context: context,
-          builder: (context)=> progressDialog
-      );
+
+      //show progress dialog
+      progressIndicator.Loading(text: "Signing In",context: context);
+
       Response response = await user.login(emailController.text, passwordController.text);
       Map body = jsonDecode(response.body);
       if(response.statusCode != 200){
@@ -64,7 +51,8 @@ class _SigninState extends State<Signin> {
           email: data["email"],
           user_id: data["user_id"],
           firstname: data["firstname"],
-          lastname: data["lastname"]
+          lastname: data["lastname"],
+          token: data["token"]
       );
       await userBox.clear();
       userBox.add(newUser);

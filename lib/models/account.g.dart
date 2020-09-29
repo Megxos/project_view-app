@@ -16,11 +16,12 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AccountModel()
-      ..id = fields[0] as int
-      ..acc_name = fields[1] as String
-      ..acc_no = fields[2] as String
-      ..acc_bank = fields[3] as String;
+    return AccountModel(
+      id: fields[0] as int,
+      acc_name: fields[1] as String,
+      acc_no: fields[2] as String,
+      acc_bank: fields[3] as String,
+    );
   }
 
   @override

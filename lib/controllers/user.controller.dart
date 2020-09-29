@@ -11,14 +11,13 @@ class User{
 
   Future <Response> login(email, password)async{
     Response response = await post(join(baseUrl, "signin"), body: {"email": email, "password": password} );
-    print(response.body);
+
     return response;
   }
 
   Future <Response> signup(email, password) async{
     Response response = await post(join(baseUrl, "signup"), body: { "email": email, "password": password });
     final Map data = jsonDecode(response.body);
-    print(data);
 
     return response;
   }

@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/services/email_validator.dart';
 import 'package:project_view/controllers/user.controller.dart';
+import 'package:project_view/ui/progress_indicator.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -21,27 +22,12 @@ class _SignUpState extends State<SignUp> {
 
   final User user = User();
 
-  final progressDialog = AlertDialog(
-      backgroundColor: Colors.transparent,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(appAccent),
-            strokeWidth: 9,
-          ),
-          Text("Please wait...", style: TextStyle().copyWith(color: plainWhite),)
-        ],
-      ));
-
   // signup function
   void signup() async{
     if(_formkey.currentState.validate()){
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => progressDialog
-      );
+      //show progress indicator
+      progressIndicator.Loading(context: context, text: "Creating account...");
+
       Response response = await user.signup(emailController.text, passwordController.text);
       Map body = jsonDecode(response.body);
       if(response.statusCode != 201){
@@ -54,11 +40,9 @@ class _SignUpState extends State<SignUp> {
             fontSize: 20.0,
          );
       }
-
       else{
-
+        Navigator.pushNamed(context, "/account");
       }
-      // Navigator.pushNamed(context, "/account");
     }
   }
 

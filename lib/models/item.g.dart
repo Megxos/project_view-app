@@ -16,13 +16,14 @@ class ItemModelAdapter extends TypeAdapter<ItemModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ItemModel()
-      ..id = fields[0] as int
-      ..item = fields[1] as String
-      ..price = fields[2] as String
-      ..quantity = fields[3] as int
-      ..project = fields[4] as int
-      ..status = fields[5] as int;
+    return ItemModel(
+      id: fields[0] as int,
+      item: fields[1] as String,
+      price: fields[2] as String,
+      quantity: fields[3] as int,
+      status: fields[5] as int,
+      project: fields[4] as int,
+    );
   }
 
   @override

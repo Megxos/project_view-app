@@ -7,3 +7,4 @@ Color darkTextColor = Colors.grey[800];
 Color appAccent = Colors.pinkAccent;
 Color red = Colors.red[400];
 Color green  = Colors.green[400];
+Color lightGrey = Colors.grey[600];

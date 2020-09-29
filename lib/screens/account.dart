@@ -1,6 +1,13 @@
+import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/account.dart';
+import 'package:project_view/ui/progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/services/banks.dart';
+import 'package:project_view/controllers/account.controller.dart';
 
 class AccountDetails extends StatefulWidget {
   @override
@@ -8,7 +15,56 @@ class AccountDetails extends StatefulWidget {
 }
 
 class _AccountDetailsState extends State<AccountDetails> {
+
+  final accBox = Hive.box<AccountModel>("account");
+
+  final _formKey = GlobalKey<FormState>();
+
   String _dropDownText = "Select Bank";
+  final accNoController = TextEditingController();
+  final accNameController = TextEditingController();
+  Account account = Account();
+
+  void addAccount()async{
+    progressIndicator.Loading(context: context, text: "Updating Account Details...");
+    Response response = await account.addAccount(_dropDownText, accNoController.text, accNameController.text);
+    if(response.statusCode != 201){
+      Navigator.pop(context);
+      final error = jsonDecode(response.body)["error"];
+
+      Fluttertoast.showToast(
+        msg: error["description"],
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_LONG,
+        fontSize: 20,
+        backgroundColor: red
+      );
+    }
+    else{
+      final data = jsonDecode(response.body)["data"];
+      print(data["data"]["acc_no"]);
+
+      AccountModel account = AccountModel(
+        id: data["data"]["acc_id"],
+        acc_name: data["data"]["acc_name"],
+        acc_no: data["data"]["acc_no"],
+        acc_bank: data["data"]["acc_bank"]
+      );
+
+      await accBox.clear();
+      accBox.add(account);
+
+      print(accBox.get(0).acc_no);
+      Fluttertoast.showToast(
+          msg:  data["description"],
+          toastLength: Toast.LENGTH_LONG,
+          backgroundColor: green,
+          fontSize: 20
+      );
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +78,7 @@ class _AccountDetailsState extends State<AccountDetails> {
           color: Colors.white,
           height: MediaQuery.of(context).size.height,
           child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -85,10 +142,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                       ),
                       SizedBox(height: 10.0,),
                       TextFormField(
+                        controller: accNoController,
+                        maxLength: 10,
+                        validator: (value) => value.length < 10 || value.length > 10 ? "Invalid account number" : null,
                         decoration: InputDecoration(
                             labelText: "Account NO.",
                             hintText: "0123456789",
                             fillColor: plainWhite,
+                            counterText: "",
                             border: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: appAccent,
@@ -105,6 +166,8 @@ class _AccountDetailsState extends State<AccountDetails> {
                       ),
                       SizedBox(height: 10.0,),
                       TextFormField(
+                        controller: accNameController,
+                        validator: (value) => value.length < 3 ? "Invalid name" : null,
                         decoration: InputDecoration(
                             labelText: "Account Name",
                             hintText: "Account Name",
@@ -131,7 +194,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
                               child: Text("Save", style: TextStyle().copyWith(color: plainWhite),),
                               color: primaryColor,
-                              onPressed: (){},
+                              onPressed: (){
+                                if(_formKey.currentState.validate()){
+                                  addAccount();
+                                }
+                              },
                             ),
                           )
                         ],
