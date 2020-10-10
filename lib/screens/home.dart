@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/user.dart';
 import 'package:project_view/screens/pending.dart';
 import 'package:project_view/screens/new_project.dart';
 import 'package:project_view/ui/colors.dart';
@@ -12,6 +14,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final userBox = Hive.box<UserModel>("user");
 
   final GlobalKey _scaffoldKey = new GlobalKey();
 
@@ -41,6 +44,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+    String email = userBox.get(0).email;
+
     return Scaffold(
       key: _scaffoldKey,
       drawer: Drawer(
@@ -107,7 +113,7 @@ class _HomeState extends State<Home> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("melijah200@gmail.com", style: TextStyle().copyWith(color: plainWhite),)
+                            Text(email, style: TextStyle().copyWith(color: plainWhite),)
                           ],
                         )
                       ],

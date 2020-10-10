@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/project.dart';
 import 'package:project_view/services/project.dart';
 
 class CustomAppBar extends StatefulWidget {
@@ -6,8 +8,7 @@ class CustomAppBar extends StatefulWidget {
   _CustomAppBarState createState() => _CustomAppBarState();
 }
 List<Project> projects = [
-  Project(name: "Window", isCompleted: true),
-  Project(name: "Building", isCompleted: false)
+
 ];
 
 newProject(Project project){
@@ -17,11 +18,28 @@ newProject(Project project){
 
 
 class _CustomAppBarState extends State<CustomAppBar> {
+
+  final projectBox = Hive.box<ProjectModel>("project");
+
   String dropDownText = "Project";
+
   final _containerKey = GlobalKey();
+
   Project currentProject;
+
   @override
   Widget build(BuildContext context) {
+
+    print(projectBox.get(0));
+
+    projects.clear();
+    
+    for(int i = 0; i < projectBox.length; i++){
+      setState(() {
+        projects.add(Project(name: projectBox.get(i).name, isCompleted: false));
+      });
+    }
+
     return Container(
       height: 90.0,
       key: _containerKey,
@@ -42,26 +60,28 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 },
               ),
               DropdownButtonHideUnderline(
-                child: DropdownButton<Project>(
-                  icon: Icon(Icons.keyboard_arrow_down, color: Colors.white,),
-                  hint: Text(dropDownText,
-                      style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white)
-                  ),
-                  onChanged: (Project project) {
-                    setState(() {
-                      dropDownText = project.name;
-                      currentProject = project;
-                    });
-                  },
-                  items: projects
-                      .map((project) => DropdownMenuItem(
-                      value: project,
-                      child: Text(
-                        project.name,
-                      )))
-                      .toList(),
+              child: DropdownButton<Project>(
+                isDense: true,
+                iconSize: 35,
+                icon: Icon(Icons.keyboard_arrow_down, color: Colors.white,),
+                hint: Text(dropDownText,
+                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white)
                 ),
-              )
+                onChanged: (Project project) {
+                  setState(() {
+                    dropDownText = project.name;
+                    currentProject = project;
+                  });
+                },
+                items: projects
+                    .map((project) => DropdownMenuItem(
+                    value: project,
+                    child: Text(
+                      project.name,
+                    )))
+                    .toList(),
+              ),
+                )
             ],
           ),
         ),

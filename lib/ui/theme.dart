@@ -13,7 +13,6 @@ ThemeData primaryTheme = new ThemeData(
                 color: Colors.indigo[500],
                 fontSize: 25,
                 fontFamily: 'SFProText',
-                fontWeight: FontWeight.bold
             ),
         )
     ),
