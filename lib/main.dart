@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_view/models/account.dart';
+import 'package:project_view/models/app_config.dart';
+import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
@@ -20,13 +22,17 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   final documentPath = await getApplicationDocumentsDirectory();
   await Hive.init(join(documentPath.path, "models"));
+  Hive.registerAdapter(AppConfigAdapter());
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(ProjectModelAdapter());
+  Hive.registerAdapter(CurrentProjectAdapter());
   Hive.registerAdapter(AccountModelAdapter());
   Hive.registerAdapter(ItemModelAdapter());
+  await Hive.openBox<AppConfig>("config");
   await Hive.openBox<UserModel>("user");
   await Hive.openBox<AccountModel>("account");
   await Hive.openBox<ProjectModel>("project");
+  await Hive.openBox<CurrentProject>("current_project");
   await Hive.openBox<ItemModel>("item");
   runApp(ProjectView());
 }
@@ -37,6 +43,11 @@ class ProjectView extends StatefulWidget {
 }
 
 class _ProjectViewState extends State<ProjectView> {
+
+  final configBox = Hive.box<AppConfig>("config");
+
+  final userBox = Hive.box<UserModel>("user");
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -45,11 +56,25 @@ class _ProjectViewState extends State<ProjectView> {
         DeviceOrientation.portraitDown
       ]
     );
+
+    appConfig.init();
+
+    bool isFirstTimeUser = configBox.get(0).isFirstTimeUser;
+
+    // isFirstTimeUser = true;
+
+    String firstScreen = "/";
+
+    if(!isFirstTimeUser && userBox.get(0) == null){
+      firstScreen = "/signin";
+    }else if(userBox.get(0) != null){
+      firstScreen = "/home";
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: primaryTheme,
-      darkTheme: darkTheme,
-      initialRoute: "/signin",
+      initialRoute: firstScreen,
       routes: {
         "/": (context) => OnBoarding(),
         "/account": (context) => AccountDetails(),

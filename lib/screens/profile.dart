@@ -1,10 +1,15 @@
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
+import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/account.dart';
+import 'package:project_view/models/item.dart';
+import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
+import 'package:project_view/ui/progress_indicator.dart';
 import 'package:project_view/main.dart';
 import 'package:project_view/ui/theme.dart';
 
@@ -19,6 +24,10 @@ class _ProfileState extends State<Profile> {
 
   final accBox = Hive.box<AccountModel>("account");
 
+  final projectBox = Hive.box<ProjectModel>("project");
+
+  final itemBox = Hive.box<ItemModel>("item");
+
   final _formkey = GlobalKey <FormState>();
 
   final firstnameController = TextEditingController();
@@ -27,10 +36,40 @@ class _ProfileState extends State<Profile> {
 
   bool _switchState = true;
 
+  User user = User();
+
   void signout(){
     userBox.clear();
     accBox.clear();
+    itemBox.clear();
+    projectBox.clear();
     Navigator.pushReplacementNamed(context, "/signin");
+  }
+
+  void updateProfile()async{
+    print(userBox.get(0).firstname);
+    progressIndicator.Loading(text: "Updating Profile", context: context);
+
+    Response response = await user.updateProfile(firstnameController.text, lastnameController.text);
+    Navigator.pop(context);
+
+    if(response.statusCode == 201){
+      userBox.get(0).firstname = firstnameController.text;
+      userBox.get(0).lastname = lastnameController.text;
+      Navigator.pop(context);
+    }else{
+      Map error = jsonDecode(response.body)["error"];
+
+      Fluttertoast.showToast(
+        msg: error["description"],
+        backgroundColor: red,
+        fontSize: 20,
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_LONG
+      );
+
+      Navigator.pop(context);
+    }
   }
 
   BoxDecoration _containerDecor = BoxDecoration(
@@ -114,7 +153,7 @@ class _ProfileState extends State<Profile> {
           icon: Icon(Icons.done, color: Colors.green, size: 40,),
           onPressed: (){
             if(_formkey.currentState.validate()){
-              Navigator.pop(context);
+              updateProfile();
             }
           },
         ),
@@ -165,7 +204,7 @@ class _ProfileState extends State<Profile> {
                     SizedBox(height: 30,),
                    Container(
                      decoration: _containerDecor,
-                     padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20),
+                     padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20),
                      child: SingleChildScrollView(
                        child: Column(
                          children: [

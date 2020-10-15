@@ -7,6 +7,7 @@ import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/custom_appbar.dart';
 import 'package:project_view/screens/completed.dart';
 import 'package:project_view/screens/join_project.dart';
+import 'package:project_view/ui/colors.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -55,7 +56,7 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.all(0),
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: MediaQuery.of(context).size.height * 0.35,
               child: DrawerHeader(
                 padding: EdgeInsets.fromLTRB(5, 10, 0, 5),
                 child: Column(
@@ -63,7 +64,7 @@ class _HomeState extends State<Home> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Project View", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold)),
@@ -77,6 +78,7 @@ class _HomeState extends State<Home> {
                         )
                       ],
                     ),
+                    SizedBox(height: 20,),
                     Column(
                       children: [
                         Row(
@@ -98,11 +100,14 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                   Positioned(
-                                    top: -10,
-                                    right: -10,
-                                    child: IconButton(
-                                      icon: Icon(Icons.edit, color: Colors.white,), onPressed: () {  },
-                                    ),
+                                    top: 0,
+                                    right: 0,
+                                    child: CircleAvatar(
+                                      backgroundColor: plainWhite,
+                                      child: IconButton(
+                                        icon: Icon(Icons.edit, color: lightGrey,), onPressed: () {  },
+                                      ),
+                                    )
                                   ),
                                 ],
                               ),
@@ -146,6 +151,11 @@ class _HomeState extends State<Home> {
               onTap: (){
                 Navigator.pushReplacementNamed(context, "/account");
               },
+            ),
+            ListTile(
+              leading: Icon(Icons.mail),
+              title: Text("Contact"),
+              onTap: (){},
             ),
             ListTile(
               title: Text("About"),

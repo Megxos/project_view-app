@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/controllers/project.controller.dart';
@@ -26,6 +28,29 @@ class _JoinProjectState extends State<JoinProject> {
     Response response = await project.joinProject(_codeController.text);
     Navigator.pop(context);
     Navigator.pop(context);
+
+    if(response.statusCode != 200){
+      final error = json.decode(response.body)["error"];
+
+      Fluttertoast.showToast(
+          msg: error["description"],
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: red,
+        fontSize: 20
+      );
+    }
+    else {
+      final project = json.decode(response.body)["data"]["project"];
+
+      Fluttertoast.showToast(
+          msg: "Successfully joined project ${project["name"]}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: green,
+        fontSize: 20,
+      );
+    }
     print(response.body);
   }
 

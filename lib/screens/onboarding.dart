@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/app_config.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_svg/svg.dart';
 
 class OnBoarding extends StatelessWidget {
+  final configBox = Hive.box<AppConfig>("config");
 
   final pages = [
     PageViewModel(
@@ -87,6 +90,7 @@ class OnBoarding extends StatelessWidget {
             activeColor: Colors.pinkAccent,
           ),
           onDone: (){
+            configBox.get(0).isFirstTimeUser = false;
             Navigator.pushNamed(context, "/signin");
           },
           done: FlatButton(

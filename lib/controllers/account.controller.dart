@@ -29,7 +29,8 @@ class Account{
   }
 
   Future<Response> getAccount()async{
-    Response response = await get(join(baseUrl, "account", user.user_id.toString()), headers: { "token": user.token });
+
+    Response response = await get(join(baseUrl, "account", userBox.get(0).user_id.toString().toString()), headers: { "token": userBox.get(0).token });
     return response;
   }
 }

@@ -1,44 +1,34 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user.dart';
+part of 'app_config.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserModelAdapter extends TypeAdapter<UserModel> {
+class AppConfigAdapter extends TypeAdapter<AppConfig> {
   @override
-  final int typeId = 0;
+  final int typeId = 4;
 
   @override
-  UserModel read(BinaryReader reader) {
+  AppConfig read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserModel(
-      user_id: fields[0] as int,
-      email: fields[3] as String,
-      firstname: fields[1] as String,
-      lastname: fields[2] as String,
-      token: fields[4] as String,
-    );
+    return AppConfig(
+      isFirstTimeUser: fields[0] as bool,
+    )..theme = fields[1] as ThemeData;
   }
 
   @override
-  void write(BinaryWriter writer, UserModel obj) {
+  void write(BinaryWriter writer, AppConfig obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.user_id)
-      ..writeByte(1)
-      ..write(obj.firstname)
       ..writeByte(2)
-      ..write(obj.lastname)
-      ..writeByte(3)
-      ..write(obj.email)
-      ..writeByte(4)
-      ..write(obj.token);
+      ..writeByte(0)
+      ..write(obj.isFirstTimeUser)
+      ..writeByte(1)
+      ..write(obj.theme);
   }
 
   @override
@@ -47,7 +37,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserModelAdapter &&
+      other is AppConfigAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

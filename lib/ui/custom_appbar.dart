@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/services/project.dart';
 
@@ -21,22 +22,42 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   final projectBox = Hive.box<ProjectModel>("project");
 
+  final currentProjectBox = Hive.box<CurrentProject>("current_project");
+
   String dropDownText = "Project";
+
+  void currentProject(){
+    print(currentProjectBox.get(0));
+    CurrentProject currentProject = currentProjectBox.get(0);
+    if( currentProject != null){
+      setState(() {
+        dropDownText = currentProject.name;
+      });
+    }
+  }
+
+  updateCurrentProject(CurrentProject project){
+    currentProjectBox.clear();
+    currentProjectModel.add(project);
+  }
 
   final _containerKey = GlobalKey();
 
-  Project currentProject;
+  // Project currentProject;
 
   @override
   Widget build(BuildContext context) {
-
-    print(projectBox.get(0));
-
     projects.clear();
-    
+    currentProject();
     for(int i = 0; i < projectBox.length; i++){
       setState(() {
-        projects.add(Project(name: projectBox.get(i).name, isCompleted: false));
+        projects.add(Project(
+            name: projectBox.get(i).name,
+            isCompleted: false,
+            owner: projectBox.get(i).owner,
+          id: projectBox.get(i).id,
+          code: projectBox.get(i).code
+        ));
       });
     }
 
@@ -70,7 +91,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onChanged: (Project project) {
                   setState(() {
                     dropDownText = project.name;
-                    currentProject = project;
+                    updateCurrentProject(CurrentProject(
+                      id: project.id,
+                      code: project.code,
+                      owner: project.owner,
+                      name: project.name
+                    ));
                   });
                 },
                 items: projects

@@ -56,6 +56,7 @@ class _SigninState extends State<Signin> {
         );
       }else{
         final Map data = jsonDecode(response.body)["data"]["user"];
+
         UserModel newUser = UserModel(
             email: data["email"],
             user_id: data["user_id"],
@@ -93,7 +94,6 @@ class _SigninState extends State<Signin> {
         await projectBox.clear();
 
         for(int i = 0; i < projects.length; i++){
-          print(projects[i]);
           await projectBox.add(ProjectModel(
               id: projects[i]["id"],
               name: projects[i]["name"],
@@ -105,7 +105,7 @@ class _SigninState extends State<Signin> {
 
         if(accResponse.statusCode == 200){
           final accData = json.decode(accResponse.body)["data"]["account"];
-          print(accData);
+
           AccountModel accountDetails = AccountModel(
             id: accData["acc_id"],
             acc_name: accData["acc_name"],
