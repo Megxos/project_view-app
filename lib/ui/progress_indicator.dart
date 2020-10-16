@@ -20,6 +20,7 @@ class ProgressIndicator{
                   valueColor: AlwaysStoppedAnimation(appAccent),
                   strokeWidth: 9,
                 ),
+                SizedBox(height: 10.0,),
                 Text(text, style: TextStyle().copyWith(color: plainWhite),)
               ],
             ))

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project_view/services/project.dart';
+import 'package:project_view/controllers/project.controller.dart';
 import 'package:project_view/ui/custom_appbar.dart';
+import 'package:project_view/ui/progress_indicator.dart';
 
 class NewProject extends StatelessWidget {
   final  _formKey = GlobalKey<FormState>();
@@ -33,9 +34,11 @@ class NewProject extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20)
                     ),
                     child: Text("Add Project",style: TextStyle(color: Colors.white),),
-                    onPressed: (){
+                    onPressed: ()async{
                       if(_formKey.currentState.validate()){
-                        newProject(Project(name: projectNameController.text, isCompleted: false));
+                        progressIndicator.Loading(text: "Creating project", context: context);
+                        await project.newProject(projectNameController.text);
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       }
                     },

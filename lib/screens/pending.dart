@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:project_view/models/account.dart';
+import 'package:project_view/models/current_project.dart';
+import 'package:project_view/models/item.dart';
+import 'package:project_view/models/user.dart';
 import 'package:project_view/services/project_item.dart';
 import 'package:project_view/screens/completed.dart';
+import 'package:project_view/ui/colors.dart';
 
 class Pending extends StatefulWidget {
   @override
@@ -8,20 +14,27 @@ class Pending extends StatefulWidget {
 }
 
 List <ProjectItem> rows = [
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  // ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
+  // ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
+  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
 ];
 
 class _PendingState extends State<Pending> {
+
+  final userBox = Hive.box<UserModel>("user");
+
+  final accBox = Hive.box<AccountModel>("account");
+
+  final currentProjectBox = Hive.box<CurrentProject>("current_project");
+
+  final itemBox = Hive.box<ItemModel>("item");
+
   final _formkey = GlobalKey<FormState>();
   final itemController = TextEditingController();
   final priceController = TextEditingController();
   final quantityController = TextEditingController();
-
-  bool isProjectOwner = true;
 
   @override
   List <ProjectItem> selectedItems;
@@ -31,14 +44,14 @@ class _PendingState extends State<Pending> {
   }
   //function to add new item
   void addItem(){
-    setState(() {
-      rows.insert(0, ProjectItem(
-          item: itemController.text,
-          price: int.parse(priceController.text),
-          quantity: int.parse(quantityController.text),
-          selected: false
-      ));
-    });
+    // setState(() {
+    //   rows.insert(0, ProjectItem(
+    //       item: itemController.text,
+    //       price: int.parse(priceController.text),
+    //       quantity: int.parse(quantityController.text),
+    //       selected: false
+    //   ));
+    // });
   }
 
   bool _isSnackbarActive = false;
@@ -77,6 +90,30 @@ class _PendingState extends State<Pending> {
   }
 
   Widget build(BuildContext context) {
+
+    String acc_bank = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_bank;
+    String acc_name = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_name;
+    String acc_no = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_no;
+
+    for(int i = 0; i < itemBox.length; i++){
+      if(itemBox.get(i).project == currentProjectBox.get(0).code){
+        rows.add(
+          ProjectItem(
+            item: itemBox.get(i).item,
+            quantity: itemBox.get(i).quantity,
+            price: int.parse(itemBox.get(i).price),
+            selected: false
+          )
+        );
+      }
+    }
+
+    bool isProjectOwner = false;
+
+    if(userBox.get(0) != null && currentProjectBox.get(0) != null){
+        isProjectOwner = currentProjectBox.get(0).owner == userBox.get(0).user_id ? true : false;
+    }
+
     int itemCount = rows.length;
     List <bool> selected = List<bool>.generate(itemCount, (index) => false);
 
@@ -242,7 +279,13 @@ class _PendingState extends State<Pending> {
 
     // dialog to show donation account details
     final donateDialog = AlertDialog(
-      title: Text("Account details"),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text("Account details"),
+          Divider(color: appAccent,)
+        ],
+      ),
       content: Stack(
           overflow: Overflow.visible,
           children: [
@@ -264,9 +307,26 @@ class _PendingState extends State<Pending> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Bank: GTB"),
-                Text("Account No: 0463040482"),
-                Text("Account Name: Micah Iliya")
+                Row(
+                  children: [
+                    Text("Bank: "),
+                    Text(acc_bank, style: TextStyle().copyWith(color: lightGrey),)
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Text("Account No: "),
+                    Text(acc_no, style: TextStyle().copyWith(color: lightGrey),)
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Text("Account Name: "),
+                    Text(acc_name, style: TextStyle().copyWith(color: lightGrey),)
+                  ],
+                ),
               ],
             ),
           ]

@@ -17,8 +17,16 @@ class CurrentProject{
   CurrentProject({ this.id, this.name, this.owner, this.code });
 
 
-  add(CurrentProject project)async{
+  addProject(CurrentProject project)async{
     final currentProjectBox = Hive.box<CurrentProject>("current_project");
-    currentProjectBox.add(project);
+
+    if(currentProjectBox.get(0) != null){
+      currentProjectBox.get(0).code = project.code;
+      currentProjectBox.get(0).id = project.id;
+      currentProjectBox.get(0).owner = project.owner;
+      currentProjectBox.get(0).name = project.name;
+    }else{
+      currentProjectBox.add(project);
+    }
   }
 }

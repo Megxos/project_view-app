@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:project_view/controllers/item.controller.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/services/project.dart';
+import 'package:project_view/ui/progress_indicator.dart';
+import 'package:project_view/ui/colors.dart';
 
 class CustomAppBar extends StatefulWidget {
   @override
@@ -27,18 +30,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
   String dropDownText = "Project";
 
   void currentProject(){
-    print(currentProjectBox.get(0));
     CurrentProject currentProject = currentProjectBox.get(0);
     if( currentProject != null){
       setState(() {
-        dropDownText = currentProject.name;
+        dropDownText = "${currentProject.name} (${currentProject.code})";
       });
     }
   }
 
-  updateCurrentProject(CurrentProject project){
-    currentProjectBox.clear();
-    currentProjectModel.add(project);
+  updateCurrentProject(CurrentProject project)async{
+    progressIndicator.Loading(text: "Please wait", context: context);
+
+    currentProjectModel.addProject(project);
+
+    int statusCode = await item.getItems(currentProjectBox.get(0).code);
+
+    Navigator.pop(context);
   }
 
   final _containerKey = GlobalKey();
@@ -80,34 +87,65 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Scaffold.of(context).openDrawer();
                 },
               ),
-              DropdownButtonHideUnderline(
-              child: DropdownButton<Project>(
-                isDense: true,
-                iconSize: 35,
-                icon: Icon(Icons.keyboard_arrow_down, color: Colors.white,),
-                hint: Text(dropDownText,
-                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white)
+              SizedBox(width: 50,),
+              Expanded(
+                child: DropdownButtonHideUnderline(
+                child: DropdownButton<Project>(
+                  isDense: true,
+                  iconSize: 35,
+                  isExpanded: true,
+                  elevation: 0,
+                  style: TextStyle().copyWith(color: plainWhite, fontSize: 18, fontFamily: "SFProText"),
+                  dropdownColor: secondaryColor,
+                  icon: Icon(Icons.keyboard_arrow_down, color: Colors.white,),
+                  hint: Align(
+                    child: Text(dropDownText,
+                        style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white)
+                    ),
+                    alignment: Alignment.centerRight,
+                  ),
+                  onChanged: (Project project) {
+                    setState(() {
+                      dropDownText = project.name;
+
+                      updateCurrentProject(CurrentProject(
+                        id: project.id,
+                        code: project.code,
+                        owner: project.owner,
+                        name: project.name
+                      ));
+                    });
+                  },
+                  items: projects
+                      .map((project) => DropdownMenuItem(
+                      value: project,
+                      child: ListTile(
+                        title: Text("${project.name} (${project.code})", style: TextStyle().copyWith(color: plainWhite, fontSize: 20.0),),
+                        trailing: PopupMenuButton(
+                          color: plainWhite,
+                          itemBuilder: (context)=>[
+                            PopupMenuItem(
+                                child: FlatButton.icon(
+                                    icon: Icon(Icons.delete, color: red,),
+                                    label: Text("Delete project"),
+                                    onPressed: (){}
+                                    )
+                            ),
+                            PopupMenuItem(
+                                child: FlatButton.icon(
+                                    icon: Icon(Icons.content_copy, color: secondaryColor,),
+                                    label: Text("Copy code"),
+                                    onPressed: (){}
+                                )
+                            )
+                          ],
+                        )
+                      ),
+                      )
+                  ).toList(),
                 ),
-                onChanged: (Project project) {
-                  setState(() {
-                    dropDownText = project.name;
-                    updateCurrentProject(CurrentProject(
-                      id: project.id,
-                      code: project.code,
-                      owner: project.owner,
-                      name: project.name
-                    ));
-                  });
-                },
-                items: projects
-                    .map((project) => DropdownMenuItem(
-                    value: project,
-                    child: Text(
-                      project.name,
-                    )))
-                    .toList(),
-              ),
-                )
+                  ),
+              )
             ],
           ),
         ),

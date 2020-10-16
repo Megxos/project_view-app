@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/account.dart';
+import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
@@ -26,6 +27,8 @@ class _ProfileState extends State<Profile> {
 
   final projectBox = Hive.box<ProjectModel>("project");
 
+  final currentProjectBox = Hive.box<CurrentProject>("current_project");
+
   final itemBox = Hive.box<ItemModel>("item");
 
   final _formkey = GlobalKey <FormState>();
@@ -43,11 +46,11 @@ class _ProfileState extends State<Profile> {
     accBox.clear();
     itemBox.clear();
     projectBox.clear();
+    currentProjectBox.clear();
     Navigator.pushReplacementNamed(context, "/signin");
   }
 
   void updateProfile()async{
-    print(userBox.get(0).firstname);
     progressIndicator.Loading(text: "Updating Profile", context: context);
 
     Response response = await user.updateProfile(firstnameController.text, lastnameController.text);
@@ -90,10 +93,10 @@ class _ProfileState extends State<Profile> {
 
     final currentUser = userBox.get(0);
 
-    String email = currentUser.email;
+    String email = currentUser == null ? "" : currentUser.email;
 
-    String firstname = currentUser.firstname;
-    String lastname = currentUser.lastname;
+    String firstname = currentUser == null ? "" : currentUser.firstname;
+    String lastname = currentUser == null ? "" : currentUser.lastname;
 
     if(firstname == null || lastname == null){
       firstname = "Not set";

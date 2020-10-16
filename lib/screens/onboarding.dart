@@ -91,7 +91,7 @@ class OnBoarding extends StatelessWidget {
           ),
           onDone: (){
             configBox.get(0).isFirstTimeUser = false;
-            Navigator.pushNamed(context, "/signin");
+            Navigator.pushReplacementNamed(context, "/signin");
           },
           done: FlatButton(
             child: Icon(

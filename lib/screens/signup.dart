@@ -28,21 +28,7 @@ class _SignUpState extends State<SignUp> {
       //show progress indicator
       progressIndicator.Loading(context: context, text: "Creating account...");
 
-      Response response = await user.signup(emailController.text, passwordController.text);
-      Map body = jsonDecode(response.body);
-      if(response.statusCode != 201){
-        Navigator.pop(context);
-        Fluttertoast.showToast(
-            msg: body["error"]["description"],
-            gravity: ToastGravity.TOP,
-            toastLength: Toast.LENGTH_LONG,
-            backgroundColor: red,
-            fontSize: 20.0,
-         );
-      }
-      else{
-        Navigator.pushNamed(context, "/account");
-      }
+      int statusCode = await user.signup(emailController.text, passwordController.text, context);
     }
   }
 

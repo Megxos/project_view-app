@@ -25,33 +25,7 @@ class _JoinProjectState extends State<JoinProject> {
 
   void joinProject()async{
     progressIndicator.Loading(context: context, text: "Joining Project");
-    Response response = await project.joinProject(_codeController.text);
-    Navigator.pop(context);
-    Navigator.pop(context);
-
-    if(response.statusCode != 200){
-      final error = json.decode(response.body)["error"];
-
-      Fluttertoast.showToast(
-          msg: error["description"],
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: red,
-        fontSize: 20
-      );
-    }
-    else {
-      final project = json.decode(response.body)["data"]["project"];
-
-      Fluttertoast.showToast(
-          msg: "Successfully joined project ${project["name"]}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: green,
-        fontSize: 20,
-      );
-    }
-    print(response.body);
+    int statusCode = await project.joinProject(_codeController.text, context);
   }
 
   @override

@@ -102,10 +102,8 @@ class _SigninState extends State<Signin> {
           ));
         }
         Response accResponse = await account.getAccount();
-
-        if(accResponse.statusCode == 200){
-          final accData = json.decode(accResponse.body)["data"]["account"];
-
+        final accData = json.decode(accResponse.body)["data"]["account"];
+        if(accResponse.statusCode == 200 && accData != null){
           AccountModel accountDetails = AccountModel(
             id: accData["acc_id"],
             acc_name: accData["acc_name"],

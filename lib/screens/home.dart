@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
-    String email = userBox.get(0).email;
+    String email = userBox.get(0) == null ? "" : userBox.get(0).email;
 
     return Scaffold(
       key: _scaffoldKey,

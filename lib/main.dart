@@ -61,9 +61,7 @@ class _ProjectViewState extends State<ProjectView> {
 
     bool isFirstTimeUser = configBox.get(0).isFirstTimeUser;
 
-    // isFirstTimeUser = true;
-
-    String firstScreen = "/";
+    String firstScreen = "/onboarding";
 
     if(!isFirstTimeUser && userBox.get(0) == null){
       firstScreen = "/signin";
@@ -76,9 +74,9 @@ class _ProjectViewState extends State<ProjectView> {
       theme: primaryTheme,
       initialRoute: firstScreen,
       routes: {
-        "/": (context) => OnBoarding(),
-        "/account": (context) => AccountDetails(),
         "/home": (context) => Home(),
+        "/account": (context) => AccountDetails(),
+        "/onboarding": (context) => OnBoarding(),
         "/project/new": (context) => NewProject(),
         "/signin": (context) => Signin(),
         "/signup": (context)=> SignUp(),

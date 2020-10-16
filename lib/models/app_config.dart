@@ -20,8 +20,6 @@ class AppConfig{
     // await Hive.openBox<AppConfig>("config");
     final configBox = Hive.box<AppConfig>("config");
 
-    print(configBox.get(0).isFirstTimeUser);
-
     if(configBox.get(0) == null){
       configBox.add(AppConfig(isFirstTimeUser: true));
     }

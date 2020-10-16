@@ -14,8 +14,8 @@ class Account{
 
   Future<Response>addAccount(acc_bank, acc_no, acc_name)async{
 
-    final String token = user.token;
-    final dynamic user_id = user.user_id;
+    final String token = user == null ? "" : user.token;
+    final dynamic user_id = user == null ? "" : user.user_id;
 
     final Map body = {
       "acc_bank": acc_bank,
