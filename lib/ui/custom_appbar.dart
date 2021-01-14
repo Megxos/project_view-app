@@ -30,7 +30,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
     currentProjectModel.addProject(project);
 
-    await item.getItems(currentProjectBox.get(0).code);
+    await item.getItems(currentProjectBox.get(0).code, context);
 
     Navigator.pop(context);
   }

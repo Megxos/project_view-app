@@ -6,6 +6,7 @@ import 'package:project_view/models/item.dart';
 import 'package:project_view/models/user.dart';
 import 'dart:convert';
 import 'package:path/path.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 
 Item item = Item();
@@ -17,25 +18,29 @@ class Item{
 
   final itemBox = Hive.box<ItemModel>("item");
 
-  Future<int>getItems(int code)async{
-    String token = userBox.get(0).token;
+  Future<int>getItems(int code, BuildContext context)async{
+    try{
+      String token = userBox.get(0).token;
 
-    Response response = await get(join(baseUrl, "items", code.toString()), headers: { "token": token });
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body)["data"]["items"];
-      itemBox.clear();
-      for(int i = 0; i < data.length; i++){
-        itemBox.add(ItemModel(
-          id: data[i]["id"],
-          item: data[i]["item"],
-          price: data[i]["price"],
-          quantity: data[i]["quantity"],
-          project: data[i]["project"]
-        ));
+      Response response = await get(join(baseUrl, "items", code.toString()), headers: { "token": token });
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body)["data"]["items"];
+        await itemBox.clear();
+        for(int i = 0; i < data.length; i++){
+          itemBox.put(i, ItemModel(
+              id: data[i]["id"],
+              item: data[i]["item"],
+              price: data[i]["price"],
+              quantity: data[i]["quantity"],
+              project: data[i]["project"]
+          ));
+        }
+        return response.statusCode;
+      }else{
+        return response.statusCode;
       }
-      return response.statusCode;
-    }else{
-      return response.statusCode;
+    }catch(e){
+      customAlert.showAlert(isSuccess: false, msg: "Error fetching items");
     }
   }
 

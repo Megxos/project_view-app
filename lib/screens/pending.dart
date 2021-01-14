@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
@@ -14,7 +13,6 @@ class Pending extends StatefulWidget {
 }
 
 List <ItemModel> rows = [];
-
 
 class _PendingState extends State<Pending> {
 
@@ -65,6 +63,8 @@ class _PendingState extends State<Pending> {
   bool _isSnackbarActive = false;
 
   bool _showCheckboxColumn  = false;
+
+  bool _isLoading = false;
 
   //  function to delete selected items
   void deleteSelected()async{
@@ -338,52 +338,59 @@ class _PendingState extends State<Pending> {
               height: MediaQuery.of(context).size.height - 40 - 67 - 100 - MediaQuery.of(context).padding.top,
               width: double.infinity,
               child: SingleChildScrollView(
-                  child: ValueListenableBuilder(
-                    valueListenable: itemBox.listenable(),
-                    builder: (context, _, __) {
-                      return DataTable(
-                      sortColumnIndex: 2,
-                      sortAscending: true,
-                      showCheckboxColumn: _showCheckboxColumn,
-                      dividerThickness: 5,
-                      columns: [
-                        DataColumn(label: Text("Item", textAlign: TextAlign.center, textScaleFactor: 1.3, style: TextStyle(fontWeight: FontWeight.bold),),),
-                        DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
-                        DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
-                      ],
-                      rows: List<DataRow>.generate(itemBox.keys.toList().length, (index){
-                        return DataRow(
-                            selected: itemBox.get(index).selected,
-                            onSelectChanged: (bool value){
-                              selectItem(value, index, itemBox.get(index));
-                            },
-                            cells: [
-                              DataCell(Text("${itemBox.get(index).item}"),),
-                              DataCell(Text("${itemBox.get(index).price}")),
-                              DataCell(
-                                  TextFormField(
-                                    initialValue: "${itemBox.get(index).quantity}",
-                                    keyboardType: TextInputType.number,
-                                    textAlign: TextAlign.right,
-                                    decoration: InputDecoration(
-                                      filled: false,
-                                      contentPadding: EdgeInsets.zero,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide.none
+                child: ValueListenableBuilder(
+                  valueListenable: itemBox.listenable(),
+                  builder: (context, _, __){
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _isLoading ? CircularProgressIndicator() : SizedBox(),
+                        DataTable(
+                        sortColumnIndex: 2,
+                        sortAscending: true,
+                        showCheckboxColumn: _showCheckboxColumn,
+                        dividerThickness: 5,
+                        columns: [
+                          DataColumn(label: Text("Item", textAlign: TextAlign.center, textScaleFactor: 1.3, ),),
+                          DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,), numeric: true),
+                          DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,), numeric: true),
+                        ],
+                        rows: List<DataRow>.generate(itemBox.keys.toList().length, (index){
+                          return DataRow(
+                              selected: itemBox.get(index).selected,
+                              onSelectChanged: (bool value){
+                                selectItem(value, index, itemBox.get(index));
+                              },
+                              cells: [
+                                DataCell(Text("${itemBox.get(index).item}"),),
+                                DataCell(Text("${itemBox.get(index).price}")),
+                                DataCell(
+                                    TextFormField(
+                                      initialValue: "${itemBox.get(index).quantity}",
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.right,
+                                      decoration: InputDecoration(
+                                        filled: false,
+                                        contentPadding: EdgeInsets.zero,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide.none
+                                        ),
+                                        border: InputBorder.none,
                                       ),
-                                      border: InputBorder.none,
-                                    ),
-                                    onFieldSubmitted: (val) => {
-                                      rows[index].quantity = int.parse(val)
-                                    },
-                                    style: TextStyle().copyWith(fontSize: 20),
-                                  ), showEditIcon: currentProjectBox.get(0).owner == userBox.get(0).user_id)
-                              // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
-                            ]
-                        );
-                      }),
-                    );}
-                  )
+                                      onFieldSubmitted: (val) => {
+                                        rows[index].quantity = int.parse(val)
+                                      },
+                                      style: TextStyle().copyWith(fontSize: 20),
+                                    ), showEditIcon: currentProjectBox.get(0).owner == userBox.get(0).user_id)
+                                // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
+                              ]
+                          );
+                        }),
+                      ),
+                      ]
+                    );
+                  },
+                )
               ),
             ),
           ),
