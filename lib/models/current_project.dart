@@ -21,10 +21,7 @@ class CurrentProject{
     final currentProjectBox = Hive.box<CurrentProject>("current_project");
 
     if(currentProjectBox.get(0) != null){
-      currentProjectBox.get(0).code = project.code;
-      currentProjectBox.get(0).id = project.id;
-      currentProjectBox.get(0).owner = project.owner;
-      currentProjectBox.get(0).name = project.name;
+      currentProjectBox.put(0, project);
     }else{
       currentProjectBox.add(project);
     }

@@ -16,6 +16,8 @@ class ItemModel{
   int project;
   @HiveField(5)
   int status;
+  @HiveField(6)
+  bool selected;
 
-  ItemModel({ this.id, this.item, this.price, this.quantity, this.status, this.project });
+  ItemModel({ this.id, this.item, this.price, this.quantity, this.status, this.project, this.selected = false });
 }

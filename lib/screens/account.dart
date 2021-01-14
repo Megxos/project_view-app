@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:project_view/ui/colors.dart';
-import 'package:project_view/services/banks.dart';
 import 'package:project_view/controllers/account.controller.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 
 class AccountDetails extends StatefulWidget {
   @override
@@ -20,54 +20,64 @@ class _AccountDetailsState extends State<AccountDetails> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String _dropDownText = "Select Bank";
+  String _dropDownText = "Please wait";
+  Map dropDownValue = {};
+
+  String _accName = "";
   final accNoController = TextEditingController();
-  final accNameController = TextEditingController();
+
   Account account = Account();
+
+  bool canFetch = false;
+  bool _fetchName = false;
 
   void addAccount()async{
     progressIndicator.Loading(context: context, text: "Updating Account Details...");
-    Response response = await account.addAccount(_dropDownText, accNoController.text, accNameController.text);
-    if(response.statusCode != 201){
-      Navigator.pop(context);
-      final error = jsonDecode(response.body)["error"];
+    await account.addAccount(
+        dropDownValue["name"],
+        accNoController.text,
+        _accName,
+        dropDownValue["code"],
+      context
+    );
 
-      Fluttertoast.showToast(
-        msg: error["description"],
-        gravity: ToastGravity.TOP,
-        toastLength: Toast.LENGTH_LONG,
-        fontSize: 20,
-        backgroundColor: red
-      );
+  }
+
+  List bankList = [
+    // default bank value
+    {
+      "name": "Select bank",
+      "code": "000"
     }
-    else{
-      final data = jsonDecode(response.body)["data"];
-      print(data["data"]["acc_no"]);
+  ];
+  void getBanks()async{
+    bankList = await account.getBanks();
+    setState(() {
+      canFetch = true;
+    });
+    _dropDownText = "Select Bank";
+  }
 
-      AccountModel account = AccountModel(
-        id: data["data"]["acc_id"],
-        acc_name: data["data"]["acc_name"],
-        acc_no: data["data"]["acc_no"],
-        acc_bank: data["data"]["acc_bank"]
-      );
-
-      await accBox.clear();
-      accBox.add(account);
-
-      print(accBox.get(0).acc_no);
-      Fluttertoast.showToast(
-          msg:  data["description"],
-          toastLength: Toast.LENGTH_LONG,
-          backgroundColor: green,
-          fontSize: 20
-      );
-      Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, "/home");
-    }
+  void verifyAccount (bank, number)async{
+    setState(() {
+      _fetchName = true;
+    });
+    final Map response = await account.verifyAccount(bank, number);
+    setState(() {
+      _accName = response["data"]["account_name"];
+      _fetchName = false;
+    });
   }
 
   @override
+  void initState() {
+    getBanks();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+    final accNameController = TextEditingController(text: _accName);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
@@ -108,35 +118,46 @@ class _AccountDetailsState extends State<AccountDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("This is where you will receive all donations", style: TextStyle().copyWith(color: Colors.grey[800]),),
+                          Expanded(
+                            child: Text(
+                              "This is where you will receive all donations",
+                              style: TextStyle().copyWith(color: Colors.grey[800]),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 20.0,),
                       Row(
                         children: [
                           Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: appAccent, width: 2.0)
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                    hint: Text(_dropDownText),
-                                    items: banks.map((bank) =>
-                                        DropdownMenuItem(
-                                            value: bank,
-                                            child: Text(bank.name)
-                                        )
-                                    ).toList(),
-                                    onChanged: (value){
-                                      setState(() {
-                                        _dropDownText = value.name;
-                                      });
-                                    }
+                            child: DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                hintText: _dropDownText,
+                                fillColor: plainWhite,
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: appAccent
+                                    )
                                 ),
                               ),
+                              onChanged: (value){
+                                setState(() {
+                                  dropDownValue = value;
+                                });
+                              },
+                              validator: (value) => value == null ? "Invalid value" : null,
+                              items: bankList.map((bank) =>
+                                  DropdownMenuItem(
+                                      value: bank,
+                                      child: Text(bank["name"])
+                                  )
+                              ).toList(),
                             ),
+                          ),
+                          canFetch ? SizedBox(height: 1,) : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 0),
+                            child: CircularProgressIndicator(),
                           ),
                         ],
                       ),
@@ -145,6 +166,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                         controller: accNoController,
                         maxLength: 10,
                         validator: (value) => value.length < 10 || value.length > 10 ? "Invalid account number" : null,
+                        onChanged: (value){
+                          if(value.length == 10){
+                            verifyAccount(dropDownValue["code"], accNoController.text);
+                          }
+                        },
                         decoration: InputDecoration(
                             labelText: "Account NO.",
                             hintText: "0123456789",
@@ -152,39 +178,46 @@ class _AccountDetailsState extends State<AccountDetails> {
                             counterText: "",
                             border: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: appAccent,
-                                    width: 2
+                                    color: appAccent
                                 )
                             ),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: appAccent,
-                                    width: 2
                                 )
                             )
                         ),
                       ),
                       SizedBox(height: 10.0,),
-                      TextFormField(
-                        controller: accNameController,
-                        validator: (value) => value.length < 3 ? "Invalid name" : null,
-                        decoration: InputDecoration(
-                            labelText: "Account Name",
-                            hintText: "Account Name",
-                          fillColor: plainWhite,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: appAccent,
-                              width: 2
-                            )
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              enabled: false,
+                              controller: accNameController,
+                              validator: (value) => value.length < 3 ? "Invalid name" : null,
+                              decoration: InputDecoration(
+                                  labelText: "Account Name",
+                                  hintText: "Account Name",
+                                  fillColor: plainWhite,
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: appAccent,
+                                      )
+                                  ),
+                                  disabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: appAccent,
+                                      )
+                                  )
+                              ),
+                            ),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: appAccent,
-                                  width: 2
-                              )
-                          )
-                        ),
+                          _fetchName ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 0),
+                            child: CircularProgressIndicator(),
+                          ) : SizedBox(height: 1,)
+                        ],
                       ),
                       SizedBox(height: 10.0,),
                       Row(

@@ -39,13 +39,11 @@ class _JoinProjectState extends State<JoinProject> {
           children: [
             Row(
               children: [
-                Text("Enter project code to join project"),
-                Expanded(
-                    child: IconButton(
-                      onPressed: (){},
-                      icon: Icon(Icons.info, color: secondaryColor,),
-                      tooltip: "Project code is shared by project owner",)
-                )
+                Expanded(child: Text("Enter project code to join project")),
+                IconButton(
+                  onPressed: (){},
+                  icon: Icon(Icons.info, color: secondaryColor,),
+                  tooltip: "Project code is shared by project owner",)
               ],
             ),
             SizedBox(height: 10,),
@@ -55,6 +53,7 @@ class _JoinProjectState extends State<JoinProject> {
                 Expanded(
                     child: PinPut(
                         fieldsCount: 5,
+                      autofocus: true,
                       controller: _codeController,
                       validator: (value) => value.length != 5 ? "Invalid project code" : null,
                       keyboardType: TextInputType.number,

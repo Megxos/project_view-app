@@ -12,6 +12,10 @@ class AccountModel{
   String acc_no;
   @HiveField(3)
   String acc_bank;
+  @HiveField(4)
+  int project;
+  @HiveField(5)
+  String bank_code;
 
-  AccountModel({ this.id, this.acc_name, this.acc_no, this.acc_bank });
+  AccountModel({ this.id, this.acc_name, this.acc_no, this.acc_bank, this.project });
 }

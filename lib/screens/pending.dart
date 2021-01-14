@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/user.dart';
-import 'package:project_view/services/project_item.dart';
-import 'package:project_view/screens/completed.dart';
 import 'package:project_view/ui/colors.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Pending extends StatefulWidget {
   @override
   _PendingState createState() => _PendingState();
 }
 
-List <ProjectItem> rows = [
-  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  // ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-  // ProjectItem(item: "Window", price: 50000, quantity: 10, selected: false),
-  // ProjectItem(item: "Cement", price: 23000, quantity: 2, selected: false),
-];
+List <ItemModel> rows = [];
+
 
 class _PendingState extends State<Pending> {
 
@@ -29,7 +24,7 @@ class _PendingState extends State<Pending> {
 
   final currentProjectBox = Hive.box<CurrentProject>("current_project");
 
-  final itemBox = Hive.box<ItemModel>("item");
+  Box<ItemModel> itemBox = Hive.box<ItemModel>("item");
 
   final _formkey = GlobalKey<FormState>();
   final itemController = TextEditingController();
@@ -37,84 +32,85 @@ class _PendingState extends State<Pending> {
   final quantityController = TextEditingController();
 
   @override
-  List <ProjectItem> selectedItems;
-  void initState(){
+  int itemCount = rows.length;
+  void getItems(){
+    for(int i = 0; i < itemBox.length; i++){
+      if(itemBox.getAt(i).project == currentProjectBox.get(0).code){
+        setState(() {
+          itemCount = itemBox.keys.toList().length ;
+        });
+      }
+    }
+  }
+
+  List <ItemModel> selectedItems;
+
+  @override
+  void initState() {
     selectedItems = [];
     super.initState();
   }
+
   //function to add new item
   void addItem(){
-    // setState(() {
-    //   rows.insert(0, ProjectItem(
-    //       item: itemController.text,
-    //       price: int.parse(priceController.text),
-    //       quantity: int.parse(quantityController.text),
-    //       selected: false
-    //   ));
-    // });
+    // progressIndicator.Loading(text: "Please wait", context: context);
+      itemBox.add(ItemModel(
+      item: itemController.text,
+      price: priceController.text,
+      quantity: int.parse(quantityController.text),
+      project: currentProjectBox.get(0).code
+    ));
   }
 
   bool _isSnackbarActive = false;
+
   bool _showCheckboxColumn  = false;
+
   //  function to delete selected items
   void deleteSelected()async{
     for(int i = 0; i < selectedItems.length; i++){
-      await rows.removeAt(rows.indexOf(selectedItems[i]));
-      selectedItems.remove(selectedItems[i]);
+      await itemBox.deleteAt(itemBox.values.toList().indexOf(selectedItems[i]));
     }
-    setState(() {
-      _isSnackbarActive = false;
-    });
+    _isSnackbarActive = false;
   }
 
   void markComplete(){
-    for(int i = 0; i < selectedItems.length; i++){
-      items.insert(0, selectedItems[i]);
-      rows.removeAt(rows.indexOf(selectedItems[i]));
-      selectedItems.remove(selectedItems[i]);
-    }
-    setState(() {
-      _isSnackbarActive = false;
-    });
+    // for(int i = 0; i < selectedItems.length; i++){
+    //   items.insert(0, selectedItems[i]);
+    //   rows.removeAt(rows.indexOf(selectedItems[i]));
+    //   selectedItems.remove(selectedItems[i]);
+    // }
+    // setState(() {
+    //   _isSnackbarActive = false;
+    // });
   }
   double navHeight = kBottomNavigationBarHeight;
 
-  // function to unselect items
-  void unselectItem(){
-    for(int i = 0; i < selectedItems.length; i++){
-      setState(() {
-        rows[rows.indexOf(selectedItems[i])].selected = false;
-        selectedItems.remove(selectedItems[i]);
-      });
-    }
-  }
+  AccountModel _defaultValue = AccountModel(
+      acc_bank: "Not set",
+      acc_name: "Not set",
+      acc_no: "Not set"
+  );
+  UserModel _defaultUserValue = UserModel(
+      email: "Not set",
+      firstname: "Not set",
+      lastname: "Not set",
+      token: "Not set"
+  );
+  CurrentProject _defaultProject = CurrentProject(
+    id: 0,
+    owner: -1
+  );
 
   Widget build(BuildContext context) {
+    int currentProjectId = currentProjectBox.get(0, defaultValue: _defaultProject).id;
+    String acc_bank = accBox.get(currentProjectId, defaultValue: _defaultValue).acc_bank;
+    String acc_name = accBox.get(currentProjectId, defaultValue: _defaultValue).acc_name;
+    String acc_no = accBox.get(currentProjectId, defaultValue: _defaultValue).acc_no;
 
-    String acc_bank = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_bank;
-    String acc_name = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_name;
-    String acc_no = accBox.get(0) == null ? "Not set" : accBox.get(0).acc_no;
+    // rows.clear();
+    // getItems();
 
-    for(int i = 0; i < itemBox.length; i++){
-      if(itemBox.get(i).project == currentProjectBox.get(0).code){
-        rows.add(
-          ProjectItem(
-            item: itemBox.get(i).item,
-            quantity: itemBox.get(i).quantity,
-            price: int.parse(itemBox.get(i).price),
-            selected: false
-          )
-        );
-      }
-    }
-
-    bool isProjectOwner = false;
-
-    if(userBox.get(0) != null && currentProjectBox.get(0) != null){
-        isProjectOwner = currentProjectBox.get(0).owner == userBox.get(0).user_id ? true : false;
-    }
-
-    int itemCount = rows.length;
     List <bool> selected = List<bool>.generate(itemCount, (index) => false);
 
     // function to manage selected items
@@ -132,8 +128,8 @@ class _PendingState extends State<Pending> {
           Row(
             children: [
               FlatButton.icon(
-                  onPressed: (){
-                    deleteSelected();
+                  onPressed: ()async{
+                    await deleteSelected();
                     Scaffold.of(context).hideCurrentSnackBar();
                   },
                   icon: Icon(Icons.delete),
@@ -158,9 +154,7 @@ class _PendingState extends State<Pending> {
             children: [
               FlatButton.icon(
                   onPressed: (){
-                    setState(() {
-                      _isSnackbarActive = false;
-                    });
+                    _isSnackbarActive = false;
                     Scaffold.of(context).hideCurrentSnackBar();
                   },
                   icon: Icon(Icons.close),
@@ -173,11 +167,11 @@ class _PendingState extends State<Pending> {
     );
 
     // function to select table item
-    void selectItem(value, index, ProjectItem item){
-      setState(() {
-        rows[index].selected = value;
-        _showCheckboxColumn ? null : _showCheckboxColumn = true;
-      });
+    void selectItem(value, index, ItemModel item){
+      item.selected = value;
+        setState(() {
+          _showCheckboxColumn ? null : _showCheckboxColumn = true;
+        });
       if(value && !_isSnackbarActive){
         setState(() {
           selectedItems.add(item);
@@ -186,22 +180,22 @@ class _PendingState extends State<Pending> {
         Scaffold.of(context).showSnackBar(actionSnackBar);
       }
       else if(value && _isSnackbarActive){
-        setState(() {
-          selectedItems.add(item);
-        });
+       setState(() {
+         selectedItems.add(item);
+       });
       }
       else if(!value && selectedItems.length > 1){
         setState(() {
-          selectedItems.remove(item);
+          selectedItems.removeAt(selectedItems.indexOf(item));
         });
       }
       else if(!value && selectedItems.length <= 1){
         Scaffold.of(context).hideCurrentSnackBar();
-        setState(() {
-          selectedItems.remove(item);
-          _isSnackbarActive = false;
-          _showCheckboxColumn = false;
-        });
+          setState(() {
+            selectedItems.remove(item);
+            _isSnackbarActive = false;
+            _showCheckboxColumn = false;
+          });
       }
     }
 
@@ -287,156 +281,160 @@ class _PendingState extends State<Pending> {
         ],
       ),
       content: Stack(
-          overflow: Overflow.visible,
-          children: [
-            Positioned(
-              top: -120,
-              right: 75,
-              child: InkResponse(
-                  child: FlatButton(
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                    },
-                    child: CircleAvatar(
-                      child: Icon(Icons.close),
-                    ),
+            overflow: Overflow.visible,
+            children: [
+              Positioned(
+                top: -120,
+                right: 75,
+                child: InkResponse(
+                    child: FlatButton(
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                      child: CircleAvatar(
+                        child: Icon(Icons.close),
+                      ),
+                    )
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text("Bank: "),
+                      Text(acc_bank, style: TextStyle().copyWith(color: lightGrey),)
+                    ],
+                  ),
+                  Divider(),
+                  Row(
+                    children: [
+                      Text("Account No: "),
+                      Text(acc_no, style: TextStyle().copyWith(color: lightGrey),)
+                    ],
+                  ),
+                  Divider(),
+                  Row(
+                    children: [
+                      Text("Account Name: "),
+                      Text(acc_name, style: TextStyle().copyWith(color: lightGrey),)
+                    ],
+                  ),
+                ],
+              ),
+            ]
+        )
+      );
+
+    return Column(
+        children: [
+          SizedBox(height: 2.0,),
+          GestureDetector(
+            onTap: (){
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - 40 - 67 - 100 - MediaQuery.of(context).padding.top,
+              width: double.infinity,
+              child: SingleChildScrollView(
+                  child: ValueListenableBuilder(
+                    valueListenable: itemBox.listenable(),
+                    builder: (context, _, __) {
+                      return DataTable(
+                      sortColumnIndex: 2,
+                      sortAscending: true,
+                      showCheckboxColumn: _showCheckboxColumn,
+                      dividerThickness: 5,
+                      columns: [
+                        DataColumn(label: Text("Item", textAlign: TextAlign.center, textScaleFactor: 1.3, style: TextStyle(fontWeight: FontWeight.bold),),),
+                        DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
+                        DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
+                      ],
+                      rows: List<DataRow>.generate(itemBox.keys.toList().length, (index){
+                        return DataRow(
+                            selected: itemBox.get(index).selected,
+                            onSelectChanged: (bool value){
+                              selectItem(value, index, itemBox.get(index));
+                            },
+                            cells: [
+                              DataCell(Text("${itemBox.get(index).item}"),),
+                              DataCell(Text("${itemBox.get(index).price}")),
+                              DataCell(
+                                  TextFormField(
+                                    initialValue: "${itemBox.get(index).quantity}",
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.right,
+                                    decoration: InputDecoration(
+                                      filled: false,
+                                      contentPadding: EdgeInsets.zero,
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide.none
+                                      ),
+                                      border: InputBorder.none,
+                                    ),
+                                    onFieldSubmitted: (val) => {
+                                      rows[index].quantity = int.parse(val)
+                                    },
+                                    style: TextStyle().copyWith(fontSize: 20),
+                                  ), showEditIcon: currentProjectBox.get(0).owner == userBox.get(0).user_id)
+                              // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
+                            ]
+                        );
+                      }),
+                    );}
                   )
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text("Bank: "),
-                    Text(acc_bank, style: TextStyle().copyWith(color: lightGrey),)
-                  ],
-                ),
-                Divider(),
-                Row(
-                  children: [
-                    Text("Account No: "),
-                    Text(acc_no, style: TextStyle().copyWith(color: lightGrey),)
-                  ],
-                ),
-                Divider(),
-                Row(
-                  children: [
-                    Text("Account Name: "),
-                    Text(acc_name, style: TextStyle().copyWith(color: lightGrey),)
-                  ],
-                ),
-              ],
-            ),
-          ]
-      ),
-    );
-
-    return Column(
-      children: [
-        SizedBox(height: 2.0,),
-        GestureDetector(
-          onTap: (){
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - 40 - 67 - 90 - MediaQuery.of(context).padding.top,
-            width: double.infinity,
-            child: SingleChildScrollView(
-              child: DataTable(
-                sortColumnIndex: 2,
-                sortAscending: true,
-                showCheckboxColumn: _showCheckboxColumn,
-                columns: [
-                  DataColumn(label: Text("Item", textAlign: TextAlign.center, textScaleFactor: 1.3, style: TextStyle(fontWeight: FontWeight.bold),),),
-                  DataColumn(label: Text("Price", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
-                  DataColumn(label: Text("Quantity", textAlign:TextAlign.center, textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold)), numeric: true),
-                ],
-                rows: List<DataRow>.generate(itemCount, (index) => DataRow(
-                    selected: rows[index].selected,
-                    onSelectChanged: (bool value){
-                      selectItem(value, index, rows[index]);
-                    },
-                    cells: [
-                      DataCell(Text("${rows[index].item}"),),
-                      DataCell(Text("${rows[index].price}")),
-                      DataCell(
-                          TextFormField(
-                            initialValue: "${rows[index].quantity}",
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.right,
-                            decoration: InputDecoration(
-                              filled: false,
-                              contentPadding: EdgeInsets.zero,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none
-                              ),
-                              border: InputBorder.none
-                            ),
-                            onFieldSubmitted: (val) => {
-                              rows[index].quantity = int.parse(val)
-                            },
-                            style: TextStyle().copyWith(fontSize: 15),
-                          ), showEditIcon: isProjectOwner)
-                      // DataCell(TextFormField(initialValue: "${rows[index].quantity},", keyboardType: TextInputType.number, decoration: InputDecoration(border: InputBorder.none),style: TextStyle().copyWith(fontSize: 15,),), showEditIcon: true, onTap: (){})
-                    ]
-                ))
-              )
-            ),
           ),
-        ),
-        SizedBox(
-          height: 40,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-            child: Row(
-              children: [
-                isProjectOwner ? Expanded(child: GestureDetector(
-                  onLongPress: (){
-                    setState(() {
-                      isProjectOwner = false;
-                    });
-                  },
-                  child: OutlineButton(
-                    onPressed: (){
-                      showDialog(context: context, builder: (context)=> itemDialog);
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)
-                    ),
-                    child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
-                    borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
-                  ),
-                )
-                ) : Expanded(
-                  child: ButtonTheme(
-                    child: GestureDetector(
-                      onLongPress: (){
-                        setState(() {
-                          isProjectOwner = true;
-                        });
-                      },
-                      child: FlatButton(
+          SizedBox(
+            height: 40,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+              child: Row(
+                children: [
+                  ValueListenableBuilder(
+                  valueListenable: currentProjectBox.listenable(),
+                  builder: (context, Box<CurrentProject> box, _){
+                    return currentProjectBox.get(0, defaultValue: _defaultProject).owner ==
+                        userBox.get(0, defaultValue: _defaultUserValue).user_id  ?
+                    Expanded(child: GestureDetector(
+                      child: OutlineButton(
                         onPressed: (){
-                          showDialog(context: context, builder: (context)=> donateDialog);
+                          showDialog(context: context, builder: (context)=> itemDialog);
                         },
-                        child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
-                        color: Colors.indigo[500],
-                        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0)
+                        ),
+                        child: Text("Add New Item", style: TextStyle(color: Colors.indigo[500])),
+                        borderSide: BorderSide(color: Colors.indigo[500], width: 3,),
                       ),
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)
-                    ),
-                    buttonColor: Colors.indigo[500],
-                  ),
-                ),
-              ],
+                    )
+                    ) : Expanded(
+                      child: ButtonTheme(
+                        child: GestureDetector(
+                          child: FlatButton(
+                            onPressed: (){
+                              showDialog(context: context, builder: (context)=> donateDialog);
+                            },
+                            child: Text("Make A Donation", style: TextStyle(color: Colors.white),),
+                            color: primaryColor,
+                            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0)
+                        ),
+                        buttonColor: Colors.indigo[500],
+                      ),
+                    );
+                  },
+                  )
+                ],
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
     );
   }
 }

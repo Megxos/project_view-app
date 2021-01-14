@@ -17,6 +17,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:project_view/screens/account.dart';
 import 'package:project_view/screens/profile.dart';
+import 'package:project_view/ui/colors.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +33,10 @@ void main() async{
   await Hive.openBox<AppConfig>("config");
   await Hive.openBox<UserModel>("user");
   await Hive.openBox<AccountModel>("account");
-  await Hive.openBox<ProjectModel>("project");
+  final projectBox = await Hive.openBox<ProjectModel>("project");
   await Hive.openBox<CurrentProject>("current_project");
   await Hive.openBox<ItemModel>("item");
-  runApp(ProjectView());
+  return runApp(ProjectView());
 }
 
 class ProjectView extends StatefulWidget {
@@ -56,9 +58,16 @@ class _ProjectViewState extends State<ProjectView> {
         DeviceOrientation.portraitDown
       ]
     );
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+          statusBarColor: primaryColor,
+        systemNavigationBarColor: primaryColor
+      )
+    );
 
+    // initialize config holding user settings
     appConfig.init();
-
+  // check if user is a first time user
     bool isFirstTimeUser = configBox.get(0).isFirstTimeUser;
 
     String firstScreen = "/onboarding";
@@ -68,7 +77,6 @@ class _ProjectViewState extends State<ProjectView> {
     }else if(userBox.get(0) != null){
       firstScreen = "/home";
     }
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: primaryTheme,

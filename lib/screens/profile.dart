@@ -10,9 +10,8 @@ import 'package:project_view/models/item.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
-import 'package:project_view/main.dart';
-import 'package:project_view/ui/theme.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -53,7 +52,7 @@ class _ProfileState extends State<Profile> {
   void updateProfile()async{
     progressIndicator.Loading(text: "Updating Profile", context: context);
 
-    Response response = await user.updateProfile(firstnameController.text, lastnameController.text);
+    Response response = await user.updateProfile(firstnameController.text, lastnameController.text, context);
     Navigator.pop(context);
 
     if(response.statusCode == 201){
@@ -63,13 +62,7 @@ class _ProfileState extends State<Profile> {
     }else{
       Map error = jsonDecode(response.body)["error"];
 
-      Fluttertoast.showToast(
-        msg: error["description"],
-        backgroundColor: red,
-        fontSize: 20,
-        gravity: ToastGravity.TOP,
-        toastLength: Toast.LENGTH_LONG
-      );
+      customAlert.showAlert(isSuccess: false, msg: error["description"]);
 
       Navigator.pop(context);
     }
@@ -90,31 +83,29 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel _defaultUserValue = UserModel(
+        email: "Not set",
+        firstname: "Not set",
+        lastname: "Not set",
+        token: "Not set"
+    );
 
-    final currentUser = userBox.get(0);
+    final currentUser = userBox.get(0, defaultValue: _defaultUserValue);
 
-    String email = currentUser == null ? "" : currentUser.email;
+    String email = currentUser.email;
+    String firstname = currentUser.firstname;
+    String lastname =  currentUser.lastname;
 
-    String firstname = currentUser == null ? "" : currentUser.firstname;
-    String lastname = currentUser == null ? "" : currentUser.lastname;
+    AccountModel _defaultValue = AccountModel(
+      acc_bank: "Not set",
+      acc_name: "Not set",
+      acc_no: "Not set"
+    );
 
-    if(firstname == null || lastname == null){
-      firstname = "Not set";
-      lastname = "Not set";
-    }
-
-    final accDetails = accBox.get(0);
-    String acc_bank, acc_no, acc_name;
-
-    if(accDetails == null){
-      acc_bank = "Not set";
-      acc_no = "Not set";
-      acc_name = "Not set";
-    }else{
-      acc_bank = accDetails.acc_bank;
-      acc_no = accDetails.acc_no;
-      acc_name = accDetails.acc_name;
-    }
+    final accDetails = accBox.get(currentProjectBox.get(0, defaultValue: CurrentProject(id: 0)).id, defaultValue: _defaultValue);
+    String acc_bank = accDetails.acc_bank;
+    String acc_no = accDetails.acc_no;
+    String acc_name = accDetails.acc_name;
 
     final signOutDialog = AlertDialog(
       title: Text("Sign Out Now?"),
@@ -162,9 +153,8 @@ class _ProfileState extends State<Profile> {
         ),
       ],
     );
-
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: offWhite,
       appBar: AppBar(
         title: Text("Profile", style: TextStyle().copyWith(color: plainWhite),),
         elevation: 0,
@@ -182,11 +172,10 @@ class _ProfileState extends State<Profile> {
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   children: [
-                    SizedBox(height: 5.0,),
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 0),
                       decoration: _containerDecor,
@@ -233,12 +222,16 @@ class _ProfileState extends State<Profile> {
                              ],
                            ),
                            SizedBox(height: 10.0,),
-                           Row(children: [
-                             Expanded(
-                               child: RaisedButton(
-                                 child: Icon(Icons.edit, color: lightGrey,),
-                                 color: Colors.white,
-                                 elevation: 0.5,
+                           Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: [
+                             Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(40.0),
+                                 color: offWhite,
+                               ),
+                               child: IconButton(
+                                 icon: Icon(Icons.edit, color: lightGrey,size: 17.0,),
                                  onPressed: (){
                                    showDialog(context: context, builder: (context) => editProfile);
                                  },
@@ -249,7 +242,7 @@ class _ProfileState extends State<Profile> {
                            SizedBox(height: 20.0,),
                            Row(
                              children: [
-                               Text("Account Details", style: TextStyle().copyWith(fontWeight: FontWeight.normal, color: Colors.grey),),
+                               Text("Project Account Details", style: TextStyle().copyWith(fontWeight: FontWeight.normal, color: Colors.grey),),
                              ],
                            ),
                            Divider(),
@@ -257,7 +250,14 @@ class _ProfileState extends State<Profile> {
                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                              children: [
                                Text("Name: "),
-                               Text(acc_name, style: TextStyle().copyWith(color: lightGrey))
+                               Expanded(
+                                 child: Text(
+                                   acc_name,
+                                   style: TextStyle().copyWith(color: lightGrey),
+                                   overflow: TextOverflow.ellipsis,
+                                   textAlign: TextAlign.right,
+                                 ),
+                               )
                              ],
                            ),
                            Row(
@@ -271,16 +271,28 @@ class _ProfileState extends State<Profile> {
                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                              children: [
                                Text("Bank: "),
-                               Expanded(child: Text(acc_bank, style: TextStyle().copyWith(color: lightGrey), overflow: TextOverflow.ellipsis, maxLines: 1, textAlign: TextAlign.right,))
+                               Expanded(
+                                   child: Text(
+                                     acc_bank,
+                                     style: TextStyle().copyWith(color: lightGrey),
+                                     overflow: TextOverflow.ellipsis,
+                                     maxLines: 1,
+                                     textAlign: TextAlign.right,
+                                   )
+                               )
                              ],
                            ),
                            SizedBox(height: 10,),
-                           Row(children: [
-                             Expanded(
-                               child: RaisedButton(
-                                 child: Icon(Icons.edit, color: lightGrey,),
-                                 color: Colors.white,
-                                 elevation: 0.5,
+                           Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: [
+                             Container(
+                               decoration: BoxDecoration(
+                                 color: offWhite,
+                                 borderRadius: BorderRadius.circular(30)
+                               ),
+                               child: IconButton(
+                                 icon: Icon(Icons.edit, color: lightGrey,size: 18,),
                                  onPressed: (){
                                    Navigator.pushNamed(context, "/account");
                                  },

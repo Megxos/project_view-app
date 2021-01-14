@@ -33,7 +33,7 @@ class NewProject extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)
                     ),
-                    child: Text("Add Project",style: TextStyle(color: Colors.white),),
+                    child: Text("Add",style: TextStyle(color: Colors.white),),
                     onPressed: ()async{
                       if(_formKey.currentState.validate()){
                         progressIndicator.Loading(text: "Creating project", context: context);

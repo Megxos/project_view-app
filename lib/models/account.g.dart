@@ -21,13 +21,14 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       acc_name: fields[1] as String,
       acc_no: fields[2] as String,
       acc_bank: fields[3] as String,
-    );
+      project: fields[4] as int,
+    )..bank_code = fields[5] as String;
   }
 
   @override
   void write(BinaryWriter writer, AccountModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,11 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       ..writeByte(2)
       ..write(obj.acc_no)
       ..writeByte(3)
-      ..write(obj.acc_bank);
+      ..write(obj.acc_bank)
+      ..writeByte(4)
+      ..write(obj.project)
+      ..writeByte(5)
+      ..write(obj.bank_code);
   }
 
   @override

@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:project_view/models/account.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,9 @@ class Project{
 
   final projectBox = Hive.box<ProjectModel>("project");
 
-  final String baseUrl = "http://project-view-api.herokuapp.com";
+  final accBox = Hive.box<AccountModel>("account");
+
+  final String baseUrl = "http://projectview.herokuapp.com/api/v1";
   String body;
 
   // retrieve all user projects fron online database
@@ -24,7 +27,7 @@ class Project{
     String user_id = userBox.get(0).user_id.toString();
     String token = userBox.get(0).token;
 
-    Response response = await get(join(baseUrl, "project", user_id), headers: { "token": token });
+    Response response = await get(join(baseUrl, "projects", user_id), headers: { "token": token });
     return response;
   }
 
@@ -32,19 +35,14 @@ class Project{
   Future<int> joinProject(code, BuildContext context)async{
 
     String token = userBox.get(0).token;
+    final String user_id = userBox.get(0).user_id.toString();
 
-    Response response = await post(join(baseUrl, "project", "join"), headers: { "token": token },body: { "code": code });
+    Response response = await post(join(baseUrl, "projects", "join"), headers: { "token": token },body: { "code": code });
     progressIndicator.Loading(context: context, text: "Joining Project");
 
     if(response.statusCode != 200){
       final error = json.decode(response.body)["error"];
-      Fluttertoast.showToast(
-          msg: error["description"],
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: red,
-          fontSize: 20
-      );
+      customAlert.showAlert(isSuccess: false, msg: error["description"]);
     }
     else {
       final project = json.decode(response.body)["data"]["project"];
@@ -55,29 +53,32 @@ class Project{
           isAMember = true;
         }
       }
-
       if(!isAMember){
-        projectBox.add(ProjectModel(
-            id: project["id"],
-            name: project["name"],
-            owner: project["owner"],
-            code: project["code"]
+        projectBox.add(
+            ProjectModel(
+              id: project["id"],
+              name: project["name"],
+              owner: project["owner"],
+              code: project["code"]
         ));
-        Fluttertoast.showToast(
-          msg: "Successfully joined project ${project["name"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: green,
-          fontSize: 20,
-        );
+        customAlert.showAlert(msg: "Successfully joined project ${project["name"]}");
       }else{
-        Fluttertoast.showToast(
-          msg: "You are already a member of ${project["name"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: green,
-          fontSize: 20,
+        final Response accResponse = await get(
+            join(baseUrl, "accounts", user_id, project["id"].toString()),
+            headers: { "token": token }
         );
+        if(accResponse.statusCode == 200){
+          final accBody = jsonDecode(accResponse.body)["data"];
+          if(accBody["account"] != null){
+            accBox.put(project["id"], AccountModel(
+                id: accBody["account"]["id"],
+                acc_bank: accBody["account"]["acc_bank"],
+                acc_name: accBody["account"]["acc_name"],
+                acc_no: accBody["account"]["acc_no"]
+            ));
+          }
+        }
+        customAlert.showAlert(msg: "You are already a member of ${project["name"]}");
       }
       }
     Navigator.pop(context);
@@ -93,16 +94,18 @@ class Project{
       "user_id": userBox.get(0).user_id.toString()
     };
 
-    Response response = await post(join(baseUrl, "project"), headers: { "token": userBox.get(0).token }, body: body);
+    Response response = await post(join(baseUrl, "projects"), headers: { "token": userBox.get(0).token }, body: body);
 
     if(response.statusCode == 201){
       final data = jsonDecode(response.body)["data"]["project"];
-      projectBox.add(ProjectModel(
-        id: data["id"],
-        owner: int.parse(data["owner"]),
-        code: data["code"],
-        name: data["name"]
-      ));
+      projectBox.add(
+          ProjectModel(
+            id: data["id"],
+            owner: int.parse(data["owner"]),
+            code: data["code"],
+            name: data["name"]
+          )
+      );
       return response.statusCode;
     }else{
       return response.statusCode;
