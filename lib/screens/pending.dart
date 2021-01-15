@@ -63,26 +63,33 @@ class _PendingState extends State<Pending> {
 
   //  function to delete selected items
   void deleteSelected() async {
+    _isSnackbarActive = false;
+    _showCheckboxColumn = false;
+    // list of item ids
+    final List<int> items =
+        List.generate(selectedItems.length, (index) => selectedItems[index].id);
+
+    // list of item keys
     final keys = List.generate(
         selectedItems.length,
         (index) => itemBox.keys
             .toList()[itemBox.values.toList().indexOf(selectedItems[index])]);
+
     await itemBox.deleteAll(keys);
+
     selectedItems.clear();
 
-    _isSnackbarActive = false;
-    _showCheckboxColumn = false;
+    await item.deleteItems(items);
   }
 
   void markComplete() async {
-    for (int i = 0; i < selectedItems.length; i++) {
-      await item.markComplete(
-          selectedItems[i], itemBox.values.toList().indexOf(selectedItems[i]));
-      selectedItems.remove(selectedItems[i]);
-    }
-    setState(() {
-      _isSnackbarActive = false;
-    });
+    final List<int> ids =
+        List.generate(selectedItems.length, (index) => selectedItems[index].id);
+    item.markComplete(selectedItems);
+    _isSnackbarActive = false;
+    _showCheckboxColumn = false;
+    await item.syncComplete(ids);
+    selectedItems.clear();
   }
 
   double navHeight = kBottomNavigationBarHeight;
@@ -424,9 +431,10 @@ class _PendingState extends State<Pending> {
                                                                     .none),
                                                     border: InputBorder.none,
                                                   ),
-                                                  onFieldSubmitted: (val) =>
-                                                      e.quantity =
-                                                          int.parse(val),
+                                                  onFieldSubmitted: (val) {
+                                                    e.quantity = int.parse(val);
+                                                    item.updateItem(e.id, val);
+                                                  },
                                                   style: TextStyle()
                                                       .copyWith(fontSize: 20),
                                                 ),

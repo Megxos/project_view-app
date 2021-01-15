@@ -3,7 +3,6 @@ import 'package:project_view/models/account.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
-import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/custom_alerts.dart';
@@ -107,5 +106,22 @@ class Project {
           name: data["name"]));
     }
     return response.statusCode;
+  }
+
+  Future<void> deleteProject(ProjectModel project) async {
+    try {
+      projectBox.delete(projectBox.keys
+          .toList()[projectBox.values.toList().indexOf(project)]);
+
+      final String token = userBox.get(0).token;
+
+      final Response response = await delete(
+          join(baseUrl, "projects", "delete", project.id.toString()),
+          headers: {"token": token});
+
+      if (response.statusCode != 200) throw Error();
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
+    }
   }
 }

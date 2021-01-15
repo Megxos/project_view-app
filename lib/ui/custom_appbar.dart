@@ -5,6 +5,7 @@ import 'package:project_view/models/project.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:project_view/controllers/project.controller.dart';
 
 class CustomAppBar extends StatefulWidget {
   @override
@@ -82,14 +83,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
               ValueListenableBuilder(
                 valueListenable: dropDownText,
-                builder: (_, value, __) => DropdownButtonHideUnderline(
+                builder: (context, value, __) => DropdownButtonHideUnderline(
                   child: SingleChildScrollView(
                     child: ValueListenableBuilder(
                       valueListenable: projectBox.listenable(),
                       builder: (context, _, __) => Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 8, 0),
                         child: DropdownButton<ProjectModel>(
-                          isDense: true,
+                          isDense: false,
                           iconSize: 35,
                           isExpanded: true,
                           elevation: 0,
@@ -118,7 +119,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                 name: project.name));
                           },
                           items: projectBox.values
-                              .toList()
                               .map((project) => DropdownMenuItem(
                                     value: project,
                                     child: ListTile(
@@ -152,16 +152,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                                                 .code !=
                                                             project.code
                                                         ? () async {
-                                                            projectBox.delete(
-                                                                projectBox
-                                                                    .values
-                                                                    .toList()
-                                                                    .indexOf(
-                                                                        project));
                                                             Navigator.pop(
                                                                 context);
                                                             Navigator.pop(
                                                                 context);
+                                                            await Project()
+                                                                .deleteProject(
+                                                                    project);
                                                           }
                                                         : null)),
                                             PopupMenuItem(

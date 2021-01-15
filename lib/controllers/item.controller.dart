@@ -19,7 +19,7 @@ class Item {
 
   final String baseUrl = "https://projectview.herokuapp.com/api/v1";
 
-  Future<int> getItems(int code, BuildContext context) async {
+  Future<void> getItems(int code, BuildContext context) async {
     try {
       String token = userBox.get(0).token;
 
@@ -57,7 +57,7 @@ class Item {
     }
   }
 
-  Future<int> addItem(ItemModel item, BuildContext context) async {
+  Future<void> addItem(ItemModel item, BuildContext context) async {
     try {
       String token = userBox.get(0) == null ? "" : userBox.get(0).token;
       String userId =
@@ -89,20 +89,64 @@ class Item {
     }
   }
 
-  Future<void> markComplete(ItemModel item, int index) async {
+  Future<void> markComplete(List<ItemModel> items) async {
     try {
-      final String token = userBox.get(0).token;
-      completedItemBox.add(CompletedItem(
-          id: item.id,
-          item: item.item,
-          price: item.price,
-          quantity: item.quantity,
-          project: item.project));
-      itemBox.deleteAt(index);
-      await post(join(baseUrl, "items", "complete", item.id.toString()),
-          headers: {"token": token});
+      List<CompletedItem> completedItems = List.generate(
+          items.length,
+          (i) => CompletedItem(
+              id: items[i].id,
+              item: items[i].item,
+              price: items[i].price,
+              quantity: items[i].quantity,
+              project: items[i].project));
+      await completedItemBox.addAll(completedItems);
+
+      final List keys = List.generate(
+          items.length,
+          (index) => itemBox.keys
+              .toList()[itemBox.values.toList().indexOf(items[index])]);
+      await itemBox.deleteAll(keys);
     } catch (e) {
       customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
+    }
+  }
+
+  Future<void> syncComplete(List<int> ids) async {
+    try {
+      final String token = userBox.get(0).token;
+      final Response response = await post(join(baseUrl, "items", "complete"),
+          body: {"items": ids.toString()}, headers: {"token": token});
+      if (response.statusCode != 200) throw Error();
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
+    }
+  }
+
+  Future<void> updateItem(int id, quantity) async {
+    try {
+      final String token = userBox.get(0).token;
+      final String userId =
+          userBox.get(0) == null ? "" : userBox.get(0).userId.toString();
+
+      final Map body = {"user_id": userId, "quantity": quantity};
+      final Response response = await put(
+          join(baseUrl, "items", "update", id.toString()),
+          body: body,
+          headers: {"token": token});
+      if (response.statusCode != 201) throw new Error();
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Could not sync updates");
+    }
+  }
+
+  Future<void> deleteItems(List<int> items) async {
+    try {
+      final String token = userBox.get(0).token;
+      final Response response = await post(join(baseUrl, "items", "delete"),
+          body: {"items": items.toString()}, headers: {"token": token});
+      if (response.statusCode != 200) throw new Error();
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Could not sync updates");
     }
   }
 }

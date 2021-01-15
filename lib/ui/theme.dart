@@ -45,7 +45,7 @@ ThemeData primaryTheme = new ThemeData(
   inputDecorationTheme: InputDecorationTheme(
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
       filled: true,
-      fillColor: Color(0xe3e9e9e0),
+      fillColor: offWhite,
       enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(width: 0, color: Color(0xe3e9e9e0))),
       border: OutlineInputBorder(
