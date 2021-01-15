@@ -3,17 +3,18 @@ import 'package:hive/hive.dart';
 part 'user.g.dart';
 
 @HiveType(typeId: 0)
-class UserModel{
+class UserModel {
   @HiveField(0)
-  int user_id;
+  int userId;
   @HiveField(1)
-  String firstname;
+  String firstName;
   @HiveField(2)
-  String lastname;
+  String lastName;
   @HiveField(3)
   String email;
   @HiveField(4)
   String token;
 
-  UserModel({ this.user_id, this.email, this.firstname, this.lastname, this.token });
+  UserModel(
+      {this.userId, this.email, this.firstName, this.lastName, this.token});
 }

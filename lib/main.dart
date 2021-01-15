@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/models/app_config.dart';
+import 'package:project_view/models/completed.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/project.dart';
@@ -18,24 +19,25 @@ import 'package:path/path.dart';
 import 'package:project_view/screens/account.dart';
 import 'package:project_view/screens/profile.dart';
 import 'package:project_view/ui/colors.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   final documentPath = await getApplicationDocumentsDirectory();
-  await Hive.init(join(documentPath.path, "models"));
+  Hive.init(join(documentPath.path, "models"));
   Hive.registerAdapter(AppConfigAdapter());
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(ProjectModelAdapter());
   Hive.registerAdapter(CurrentProjectAdapter());
   Hive.registerAdapter(AccountModelAdapter());
   Hive.registerAdapter(ItemModelAdapter());
+  Hive.registerAdapter(CompletedItemAdapter());
   await Hive.openBox<AppConfig>("config");
   await Hive.openBox<UserModel>("user");
   await Hive.openBox<AccountModel>("account");
-  final projectBox = await Hive.openBox<ProjectModel>("project");
+  await Hive.openBox<ProjectModel>("project");
   await Hive.openBox<CurrentProject>("current_project");
   await Hive.openBox<ItemModel>("item");
+  await Hive.openBox<CompletedItem>("completed");
   return runApp(ProjectView());
 }
 

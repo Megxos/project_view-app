@@ -1,9 +1,8 @@
 import 'package:hive/hive.dart';
+part 'completed.g.dart';
 
-part 'item.g.dart';
-
-@HiveType(typeId: 2)
-class ItemModel {
+@HiveType(typeId: 6)
+class CompletedItem {
   @HiveField(0)
   int id;
   @HiveField(1)
@@ -14,17 +13,14 @@ class ItemModel {
   int quantity;
   @HiveField(4)
   int project;
-  @HiveField(5)
-  int status;
   @HiveField(6)
   bool selected;
 
-  ItemModel(
+  CompletedItem(
       {this.id,
       this.item,
       this.price,
       this.quantity,
-      this.status,
       this.project,
       this.selected = false});
 }

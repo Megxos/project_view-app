@@ -12,42 +12,42 @@ final userBox = Hive.box<UserModel>("user");
 final currentProjectBox = Hive.box<CurrentProject>("current_project");
 final accBox = Hive.box<AccountModel>("account");
 
-class Account{
+class Account {
   String baseUrl = "http://projectview.herokuapp.com/api/v1";
   String bankUrl = "http://influencerng.herokuapp.com";
 
   UserModel user = userBox.get(0);
 
-  Future<Response>addAccount(acc_bank, acc_no, acc_name, bank_code, BuildContext context)async{
-
+  Future<Response> addAccount(
+      accBank, accNo, accName, bankCode, BuildContext context) async {
     final String token = user == null ? "" : user.token;
-    final dynamic user_id = user == null ? "" : user.user_id;
+    final dynamic userId = user == null ? "" : user.userId;
 
-    final  project = currentProjectBox.get(0).id;
+    final project = currentProjectBox.get(0).id;
 
     final Map body = {
-      "acc_bank": acc_bank,
-      "acc_no": acc_no,
-      "acc_name": acc_name,
-      "user_id": user_id.toString(),
-      "project" : project.toString(),
-      "bank_code": bank_code
+      "accBank": accBank,
+      "acc_no": accNo,
+      "acc_name": accName,
+      "user_id": userId.toString(),
+      "project": project.toString(),
+      "bank_code": bankCode
     };
-    Response response = await post(join(baseUrl, "accounts"), headers: { "token": token }, body: body );
+    Response response = await post(join(baseUrl, "accounts"),
+        headers: {"token": token}, body: body);
 
-    if(response.statusCode != 201){
+    if (response.statusCode != 201) {
       Navigator.pop(context);
       final error = jsonDecode(response.body)["error"];
       customAlert.showAlert(isSuccess: false, msg: error["description"]);
-    }
-    else{
+    } else {
       final data = jsonDecode(response.body)["data"];
       AccountModel account = AccountModel(
-          id: data["data"]["acc_id"],
-          acc_name: data["data"]["acc_name"],
-          acc_no: data["data"]["acc_no"],
-          acc_bank: data["data"]["acc_bank"],
-          project: project,
+        id: data["data"]["acc_id"],
+        accName: data["data"]["acc_name"],
+        accNo: data["data"]["acc_no"],
+        accBank: data["data"]["acc_bank"],
+        project: project,
       );
       accBox.put(project, account);
 
@@ -58,51 +58,51 @@ class Account{
     return response;
   }
 
-  Future<Response> getAccount()async{
-
-    Response response = await get(join(baseUrl, "accounts", userBox.get(0).user_id.toString().toString()), headers: { "token": userBox.get(0).token });
+  Future<Response> getAccount() async {
+    Response response = await get(
+        join(baseUrl, "accounts", userBox.get(0).userId.toString().toString()),
+        headers: {"token": userBox.get(0).token});
     return response;
   }
 
-  Future<void> getAccounts()async{
-    UserModel _defaultValue = UserModel(
-      user_id: -1,
-      token: "not set"
-    );
-    final user_id = userBox.get(0, defaultValue: _defaultValue).user_id;
+  Future<void> getAccounts() async {
+    UserModel _defaultValue = UserModel(userId: -1, token: "not set");
+    final userId = userBox.get(0, defaultValue: _defaultValue).userId;
     final token = userBox.get(0, defaultValue: _defaultValue).token;
 
-    Response response = await get(join(baseUrl, "accounts", user_id.toString()), headers: {"token": token});
+    Response response = await get(join(baseUrl, "accounts", userId.toString()),
+        headers: {"token": token});
     final body = jsonDecode(response.body);
 
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       final List accounts = body["data"]["accounts"];
-      for(int i = 0; i < accounts.length; i++){
+      for (int i = 0; i < accounts.length; i++) {
         accBox.put(
             accounts[i]["project"],
             AccountModel(
-                acc_no: accounts[i]["acc_no"],
-                acc_name: accounts[i]["acc_name"],
-                acc_bank: accounts[i]["acc_bank"],
-                project: accounts[i]["project"]
-            )
-        );
+                accNo: accounts[i]["acc_no"],
+                accName: accounts[i]["acc_name"],
+                accBank: accounts[i]["acc_bank"],
+                project: accounts[i]["project"]));
       }
     }
   }
 
-  Future<List>getBanks()async{
-    Response response = await get(join(bankUrl, "payment","banks"));
-    if(response.statusCode == 200){
+  Future<List> getBanks() async {
+    Response response = await get(join(bankUrl, "payment", "banks"));
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
+    return [];
   }
 
-  Future<Map> verifyAccount(bank, number)async{
+  Future<Map> verifyAccount(bank, number) async {
     Map body = {"account_bank": bank, "account_number": number};
-    Response response = await post(join(bankUrl, "payment", "bank", "verify"), body: body);
-    if(response.statusCode == 200){
+    Response response =
+        await post(join(bankUrl, "payment", "bank", "verify"), body: body);
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
+    return {};
   }
 }

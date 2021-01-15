@@ -10,26 +10,21 @@ class OnBoarding extends StatelessWidget {
 
   final pages = [
     PageViewModel(
-      title: "Be Your Own Project Manager",
-      body: "Managing projects has never been this easy",
-      image: Center(
-        child: SvgPicture.asset("assets/svgs/organizing-projects.svg"),
-      ),
-      decoration: PageDecoration(
-        imageFlex: 2,
-        imagePadding: EdgeInsets.zero,
-        titleTextStyle: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
-        bodyTextStyle: TextStyle().copyWith(color: plainWhite),
-        boxDecoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            colors: [
-              primaryColor, secondaryColor
-            ]
-          )
-        )
-      )
-    ),
+        title: "Be Your Own Project Manager",
+        body: "Managing projects has never been this easy",
+        image: Center(
+          child: SvgPicture.asset("assets/svgs/organizing-projects.svg"),
+        ),
+        decoration: PageDecoration(
+            imageFlex: 2,
+            imagePadding: EdgeInsets.zero,
+            titleTextStyle: TextStyle().copyWith(
+                color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
+            bodyTextStyle: TextStyle().copyWith(color: plainWhite),
+            boxDecoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    colors: [primaryColor, secondaryColor])))),
     PageViewModel(
         title: "Get Helping Hands",
         body: "Let people contribute to your project in bits",
@@ -39,18 +34,13 @@ class OnBoarding extends StatelessWidget {
         decoration: PageDecoration(
             imageFlex: 2,
             imagePadding: EdgeInsets.zero,
-            titleTextStyle: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
+            titleTextStyle: TextStyle().copyWith(
+                color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
             bodyTextStyle: TextStyle().copyWith(color: plainWhite),
             boxDecoration: BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
-                    colors: [
-                      primaryColor, secondaryColor
-                    ]
-                )
-            )
-        )
-    ),
+                    colors: [primaryColor, secondaryColor])))),
     PageViewModel(
         title: "All In One",
         body: "Manage all your projects in one place",
@@ -60,18 +50,13 @@ class OnBoarding extends StatelessWidget {
         decoration: PageDecoration(
             imageFlex: 2,
             imagePadding: EdgeInsets.zero,
-            titleTextStyle: TextStyle().copyWith(color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
+            titleTextStyle: TextStyle().copyWith(
+                color: plainWhite, fontWeight: FontWeight.bold, fontSize: 30),
             bodyTextStyle: TextStyle().copyWith(color: plainWhite),
             boxDecoration: BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
-                    colors: [
-                      primaryColor, secondaryColor
-                    ]
-                )
-            )
-        )
-    ),
+                    colors: [primaryColor, secondaryColor])))),
   ];
 
   @override
@@ -81,25 +66,29 @@ class OnBoarding extends StatelessWidget {
           pages: pages,
           globalBackgroundColor: secondaryColor,
           showNextButton: true,
-          next: Icon(Icons.arrow_forward_ios, color: plainWhite,),
+          next: Icon(
+            Icons.arrow_forward_ios,
+            color: plainWhite,
+          ),
           showSkipButton: true,
-          skip: Text("Skip", style: TextStyle().copyWith(color: plainWhite),),
+          skip: Text(
+            "Skip",
+            style: TextStyle().copyWith(color: plainWhite),
+          ),
           dotsDecorator: DotsDecorator(
             color: plainWhite,
             activeSize: Size.square(20),
             activeColor: Colors.pinkAccent,
           ),
-          onDone: (){
+          onDone: () {
             configBox.get(0).isFirstTimeUser = false;
             Navigator.pushReplacementNamed(context, "/signin");
           },
-          done: FlatButton(
-            child: Icon(
-              Icons.done, size: 40,
-              color: appAccent,
-            ),
-          )
-      ),
+          done: Icon(
+            Icons.done,
+            size: 40,
+            color: appAccent,
+          )),
     );
   }
 }

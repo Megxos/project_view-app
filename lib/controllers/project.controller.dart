@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:project_view/models/account.dart';
-import 'package:project_view/ui/colors.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
+import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/custom_alerts.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 
 Project project = Project();
 
-class Project{
+class Project {
   final userBox = Hive.box<UserModel>("user");
 
   final projectBox = Hive.box<ProjectModel>("project");
@@ -23,93 +23,89 @@ class Project{
   String body;
 
   // retrieve all user projects fron online database
-  Future<Response> getProjects()async{
-    String user_id = userBox.get(0).user_id.toString();
+  Future<Response> getProjects() async {
+    String userId = userBox.get(0).userId.toString();
     String token = userBox.get(0).token;
 
-    Response response = await get(join(baseUrl, "projects", user_id), headers: { "token": token });
+    Response response =
+        await get(join(baseUrl, "projects", userId), headers: {"token": token});
     return response;
   }
 
   // join a friends project using project code
-  Future<int> joinProject(code, BuildContext context)async{
+  Future<int> joinProject(code, BuildContext context) async {
+    try {
+      String token = userBox.get(0).token;
+      final String userId = userBox.get(0).userId.toString();
 
-    String token = userBox.get(0).token;
-    final String user_id = userBox.get(0).user_id.toString();
+      Response response = await post(join(baseUrl, "projects", "join"),
+          headers: {"token": token}, body: {"code": code});
+      progressIndicator.loading(context: context, text: "Joining Project");
 
-    Response response = await post(join(baseUrl, "projects", "join"), headers: { "token": token },body: { "code": code });
-    progressIndicator.Loading(context: context, text: "Joining Project");
+      if (response.statusCode != 200) {
+        final error = json.decode(response.body)["error"];
+        customAlert.showAlert(isSuccess: false, msg: error["description"]);
+      } else {
+        final project = json.decode(response.body)["data"]["project"];
+        bool isAMember = false;
 
-    if(response.statusCode != 200){
-      final error = json.decode(response.body)["error"];
-      customAlert.showAlert(isSuccess: false, msg: error["description"]);
-    }
-    else {
-      final project = json.decode(response.body)["data"]["project"];
-      bool isAMember = false;
-
-      for(int i = 0; i < projectBox.length; i++){
-        if(projectBox.get(i).code == project["code"]){
-          isAMember = true;
+        for (int i = 0; i < projectBox.length; i++) {
+          if (projectBox.get(i).code == project["code"]) {
+            isAMember = true;
+          }
         }
-      }
-      if(!isAMember){
-        projectBox.add(
-            ProjectModel(
+        if (!isAMember) {
+          projectBox.add(ProjectModel(
               id: project["id"],
               name: project["name"],
               owner: project["owner"],
-              code: project["code"]
-        ));
-        customAlert.showAlert(msg: "Successfully joined project ${project["name"]}");
-      }else{
-        final Response accResponse = await get(
-            join(baseUrl, "accounts", user_id, project["id"].toString()),
-            headers: { "token": token }
-        );
-        if(accResponse.statusCode == 200){
-          final accBody = jsonDecode(accResponse.body)["data"];
-          if(accBody["account"] != null){
-            accBox.put(project["id"], AccountModel(
-                id: accBody["account"]["id"],
-                acc_bank: accBody["account"]["acc_bank"],
-                acc_name: accBody["account"]["acc_name"],
-                acc_no: accBody["account"]["acc_no"]
-            ));
+              code: project["code"]));
+          customAlert.showAlert(
+              msg: "Successfully joined project ${project["name"]}");
+        } else {
+          final Response accResponse = await get(
+              join(baseUrl, "accounts", userId, project["id"].toString()),
+              headers: {"token": token});
+          if (accResponse.statusCode == 200) {
+            final accBody = jsonDecode(accResponse.body)["data"];
+            if (accBody["account"] != null) {
+              accBox.put(
+                  project["id"],
+                  AccountModel(
+                      id: accBody["account"]["id"],
+                      accBank: accBody["account"]["acc_bank"],
+                      accName: accBody["account"]["acc_name"],
+                      accNo: accBody["account"]["acc_no"]));
+            }
           }
+          customAlert.showAlert(
+              msg: "You are already a member of ${project["name"]}");
         }
-        customAlert.showAlert(msg: "You are already a member of ${project["name"]}");
       }
-      }
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    return response.statusCode;
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      return response.statusCode;
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
+    }
   }
 
   // create a new user project
-  Future<int>newProject(String name)async{
-    Map body = {
-      "name": name,
-      "user_id": userBox.get(0).user_id.toString()
-    };
+  Future<int> newProject(String name) async {
+    Map body = {"name": name, "user_id": userBox.get(0).userId.toString()};
 
-    Response response = await post(join(baseUrl, "projects"), headers: { "token": userBox.get(0).token }, body: body);
+    Response response = await post(join(baseUrl, "projects"),
+        headers: {"token": userBox.get(0).token}, body: body);
 
-    if(response.statusCode == 201){
+    if (response.statusCode == 201) {
       final data = jsonDecode(response.body)["data"]["project"];
-      projectBox.add(
-          ProjectModel(
-            id: data["id"],
-            owner: int.parse(data["owner"]),
-            code: data["code"],
-            name: data["name"]
-          )
-      );
-      return response.statusCode;
-    }else{
-      return response.statusCode;
+      projectBox.add(ProjectModel(
+          id: data["id"],
+          owner: int.parse(data["owner"]),
+          code: data["code"],
+          name: data["name"]));
     }
-    print(response.body);
+    return response.statusCode;
   }
 }

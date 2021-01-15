@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/controllers/account.controller.dart';
-import 'package:project_view/ui/custom_alerts.dart';
 
 class AccountDetails extends StatefulWidget {
   @override
@@ -15,7 +11,6 @@ class AccountDetails extends StatefulWidget {
 }
 
 class _AccountDetailsState extends State<AccountDetails> {
-
   final accBox = Hive.box<AccountModel>("account");
 
   final _formKey = GlobalKey<FormState>();
@@ -31,26 +26,18 @@ class _AccountDetailsState extends State<AccountDetails> {
   bool canFetch = false;
   bool _fetchName = false;
 
-  void addAccount()async{
-    progressIndicator.Loading(context: context, text: "Updating Account Details...");
-    await account.addAccount(
-        dropDownValue["name"],
-        accNoController.text,
-        _accName,
-        dropDownValue["code"],
-      context
-    );
-
+  void addAccount() async {
+    progressIndicator.loading(
+        context: context, text: "Updating Account Details...");
+    await account.addAccount(dropDownValue["name"], accNoController.text,
+        _accName, dropDownValue["code"], context);
   }
 
   List bankList = [
     // default bank value
-    {
-      "name": "Select bank",
-      "code": "000"
-    }
+    {"name": "Select bank", "code": "000"}
   ];
-  void getBanks()async{
+  void getBanks() async {
     bankList = await account.getBanks();
     setState(() {
       canFetch = true;
@@ -58,7 +45,7 @@ class _AccountDetailsState extends State<AccountDetails> {
     _dropDownText = "Select Bank";
   }
 
-  void verifyAccount (bank, number)async{
+  void verifyAccount(bank, number) async {
     setState(() {
       _fetchName = true;
     });
@@ -74,6 +61,7 @@ class _AccountDetailsState extends State<AccountDetails> {
     getBanks();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final accNameController = TextEditingController(text: _accName);
@@ -81,7 +69,7 @@ class _AccountDetailsState extends State<AccountDetails> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Container(
@@ -96,21 +84,27 @@ class _AccountDetailsState extends State<AccountDetails> {
                   height: 200,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(top: Radius.zero, bottom: Radius.circular(200.0)),
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.zero, bottom: Radius.circular(200.0)),
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomRight,
-                        colors: [
-                          primaryColor,
-                          secondaryColor
-                        ],
-                      )
-                  ),
+                        colors: [primaryColor, secondaryColor],
+                      )),
                   child: Center(
-                    child: Text("Add Account", textScaleFactor: 2, style: TextStyle().copyWith(color: plainWhite, fontFamily: "Sans", fontWeight: FontWeight.bold),),
+                    child: Text(
+                      "Add Account",
+                      textScaleFactor: 2,
+                      style: TextStyle().copyWith(
+                          color: plainWhite,
+                          fontFamily: "Sans",
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-                SizedBox(height: 10.0,),
+                SizedBox(
+                  height: 10.0,
+                ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
                   child: Column(
@@ -121,13 +115,16 @@ class _AccountDetailsState extends State<AccountDetails> {
                           Expanded(
                             child: Text(
                               "This is where you will receive all donations",
-                              style: TextStyle().copyWith(color: Colors.grey[800]),
+                              style:
+                                  TextStyle().copyWith(color: Colors.grey[800]),
                               textAlign: TextAlign.center,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 20.0,),
+                      SizedBox(
+                        height: 20.0,
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -136,39 +133,46 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 hintText: _dropDownText,
                                 fillColor: plainWhite,
                                 enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: appAccent
-                                    )
-                                ),
+                                    borderSide: BorderSide(color: appAccent)),
                               ),
-                              onChanged: (value){
+                              onChanged: (value) {
                                 setState(() {
                                   dropDownValue = value;
                                 });
                               },
-                              validator: (value) => value == null ? "Invalid value" : null,
-                              items: bankList.map((bank) =>
-                                  DropdownMenuItem(
-                                      value: bank,
-                                      child: Text(bank["name"])
-                                  )
-                              ).toList(),
+                              validator: (value) =>
+                                  value == null ? "Invalid value" : null,
+                              items: bankList
+                                  .map((bank) => DropdownMenuItem(
+                                      value: bank, child: Text(bank["name"])))
+                                  .toList(),
                             ),
                           ),
-                          canFetch ? SizedBox(height: 1,) : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 0),
-                            child: CircularProgressIndicator(),
-                          ),
+                          canFetch
+                              ? SizedBox(
+                                  height: 1,
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0, vertical: 0),
+                                  child: CircularProgressIndicator(),
+                                ),
                         ],
                       ),
-                      SizedBox(height: 10.0,),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       TextFormField(
                         controller: accNoController,
                         maxLength: 10,
-                        validator: (value) => value.length < 10 || value.length > 10 ? "Invalid account number" : null,
-                        onChanged: (value){
-                          if(value.length == 10){
-                            verifyAccount(dropDownValue["code"], accNoController.text);
+                        validator: (value) =>
+                            value.length < 10 || value.length > 10
+                                ? "Invalid account number"
+                                : null,
+                        onChanged: (value) {
+                          if (value.length == 10) {
+                            verifyAccount(
+                                dropDownValue["code"], accNoController.text);
                           }
                         },
                         decoration: InputDecoration(
@@ -177,58 +181,64 @@ class _AccountDetailsState extends State<AccountDetails> {
                             fillColor: plainWhite,
                             counterText: "",
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: appAccent
-                                )
-                            ),
+                                borderSide: BorderSide(color: appAccent)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: appAccent,
-                                )
-                            )
-                        ),
+                              color: appAccent,
+                            ))),
                       ),
-                      SizedBox(height: 10.0,),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       Row(
                         children: [
                           Expanded(
                             child: TextFormField(
                               enabled: false,
                               controller: accNameController,
-                              validator: (value) => value.length < 3 ? "Invalid name" : null,
+                              validator: (value) =>
+                                  value.length < 3 ? "Invalid name" : null,
                               decoration: InputDecoration(
                                   labelText: "Account Name",
                                   hintText: "Account Name",
                                   fillColor: plainWhite,
                                   border: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: appAccent,
-                                      )
-                                  ),
+                                    color: appAccent,
+                                  )),
                                   disabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: appAccent,
-                                      )
-                                  )
-                              ),
+                                    color: appAccent,
+                                  ))),
                             ),
                           ),
-                          _fetchName ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 0),
-                            child: CircularProgressIndicator(),
-                          ) : SizedBox(height: 1,)
+                          _fetchName
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0, vertical: 0),
+                                  child: CircularProgressIndicator(),
+                                )
+                              : SizedBox(
+                                  height: 1,
+                                )
                         ],
                       ),
-                      SizedBox(height: 10.0,),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       Row(
                         children: [
                           Expanded(
                             child: RaisedButton(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
-                              child: Text("Save", style: TextStyle().copyWith(color: plainWhite),),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 15.0),
+                              child: Text(
+                                "Save",
+                                style: TextStyle().copyWith(color: plainWhite),
+                              ),
                               color: primaryColor,
-                              onPressed: (){
-                                if(_formKey.currentState.validate()){
+                              onPressed: () {
+                                if (_formKey.currentState.validate()) {
                                   addAccount();
                                 }
                               },
@@ -240,13 +250,17 @@ class _AccountDetailsState extends State<AccountDetails> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           FlatButton(
-                            child:
-                            Row(
-                                children: [
-                                  Text("Skip"),
-                                  Icon(Icons.arrow_forward,),
-                                ]
-                            ),padding: EdgeInsets.zero,onPressed: (){ Navigator.pushReplacementNamed(context, "/home"); },),
+                            child: Row(children: [
+                              Text("Skip"),
+                              Icon(
+                                Icons.arrow_forward,
+                              ),
+                            ]),
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, "/home");
+                            },
+                          ),
                         ],
                       )
                     ],

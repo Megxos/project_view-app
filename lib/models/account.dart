@@ -3,19 +3,19 @@ import 'package:hive/hive.dart';
 part 'account.g.dart';
 
 @HiveType(typeId: 1)
-class AccountModel{
+class AccountModel {
   @HiveField(0)
   int id;
   @HiveField(1)
-  String acc_name;
+  String accName;
   @HiveField(2)
-  String acc_no;
+  String accNo;
   @HiveField(3)
-  String acc_bank;
+  String accBank;
   @HiveField(4)
   int project;
   @HiveField(5)
-  String bank_code;
+  String bankCode;
 
-  AccountModel({ this.id, this.acc_name, this.acc_no, this.acc_bank, this.project });
+  AccountModel({this.id, this.accName, this.accNo, this.accBank, this.project});
 }

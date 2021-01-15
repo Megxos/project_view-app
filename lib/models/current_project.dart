@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:project_view/controllers/item.controller.dart';
 part 'current_project.g.dart';
 
 CurrentProject currentProjectModel = CurrentProject();
 
 @HiveType(typeId: 5)
-class CurrentProject{
+class CurrentProject {
   @HiveField(0)
   int id;
   @HiveField(1)
@@ -14,16 +16,12 @@ class CurrentProject{
   @HiveField(3)
   int owner;
 
-  CurrentProject({ this.id, this.name, this.owner, this.code });
+  CurrentProject({this.id, this.name, this.owner, this.code});
 
-
-  addProject(CurrentProject project)async{
+  addProject(CurrentProject project, BuildContext context) async {
     final currentProjectBox = Hive.box<CurrentProject>("current_project");
 
-    if(currentProjectBox.get(0) != null){
-      currentProjectBox.put(0, project);
-    }else{
-      currentProjectBox.add(project);
-    }
+    currentProjectBox.put(0, project);
+    await item.getItems(currentProjectBox.get(0).code, context);
   }
 }

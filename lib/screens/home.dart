@@ -9,7 +9,6 @@ import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/custom_appbar.dart';
 import 'package:project_view/screens/completed.dart';
 import 'package:project_view/screens/join_project.dart';
-import 'package:project_view/ui/colors.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,7 +24,7 @@ class _HomeState extends State<Home> {
 
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index){
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -35,25 +34,20 @@ class _HomeState extends State<Home> {
     content: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text("Project View", style: TextStyle(fontSize: 25, color: Colors.grey[800]),),
+        Text(
+          "Project View",
+          style: TextStyle(fontSize: 25, color: Colors.grey[800]),
+        ),
         Text("v1.0.0")
       ],
     ),
     title: Text("About"),
   );
 
-  List<Widget> _widgetOptions = [
-    Pending(),
-    Completed()
-  ];
-  
+  List<Widget> _widgetOptions = [Pending(), Completed()];
+
   @override
   Widget build(BuildContext context) {
-
-    String email = userBox.get(0) == null ? "" : userBox.get(0).email;
-
-    final currentProject = currentProjectBox.get(0);
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: Drawer(
@@ -74,13 +68,20 @@ class _HomeState extends State<Home> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
-                          child: Text("Project View", style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold)),
+                          child: Text("Project View",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold)),
                         ),
                         IconButton(
                           padding: EdgeInsets.all(0),
                           tooltip: "Close drawer",
-                          icon: Icon(Icons.arrow_back_ios, color: Colors.white,),
-                          onPressed: (){
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
                             Navigator.pop(context);
                           },
                         )
@@ -134,41 +135,69 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               // Divider(color: plainWhite, height: 70,),
-              ListTile(title: Text("Add New Project", style: TextStyle().copyWith(color: plainWhite),),
+              ListTile(
+                title: Text(
+                  "Add New Project",
+                  style: TextStyle().copyWith(color: plainWhite),
+                ),
                 leading: Icon(Icons.add, color: plainWhite),
-                onTap: (){
+                onTap: () {
                   Navigator.pop(context);
-                  showDialog(context: context, builder: (context)=> NewProject());
-                },),
+                  showDialog(
+                      context: context, builder: (context) => NewProject());
+                },
+              ),
               ListTile(
                 leading: Icon(Icons.people, color: plainWhite),
-                title: Text("Join Project", style: TextStyle().copyWith(color: plainWhite)),
-                onTap: (){
+                title: Text("Join Project",
+                    style: TextStyle().copyWith(color: plainWhite)),
+                onTap: () {
                   Navigator.pop(context);
-                  showDialog(context: context, builder: (context) => JoinProject());
+                  showDialog(
+                      context: context, builder: (context) => JoinProject());
                 },
               ),
-              currentProjectBox.get(0) == null ? SizedBox() : ListTile(
-                title: Text("Update Account Details", style: TextStyle().copyWith(color: plainWhite)),
-                leading: Icon(Icons.credit_card, color: plainWhite),
-                onTap: (){
-                  Navigator.pushReplacementNamed(context, "/account");
-                },
-              ),
+              currentProjectBox.get(0) == null
+                  ? SizedBox()
+                  : ListTile(
+                      title: Text("Update Account Details",
+                          style: TextStyle().copyWith(color: plainWhite)),
+                      leading: Icon(Icons.credit_card, color: plainWhite),
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, "/account");
+                      },
+                    ),
               ListTile(
                 leading: Icon(Icons.mail, color: plainWhite),
-                title: Text("Contact", style: TextStyle().copyWith(color: plainWhite)),
-                onTap: (){},
+                title: Text("Contact",
+                    style: TextStyle().copyWith(color: plainWhite)),
+                onTap: () {},
               ),
               ListTile(
-                title: Text("About", style: TextStyle().copyWith(color: plainWhite)),
-                leading: Icon(Icons.info_outline, color: plainWhite,),
-                onTap: (){
+                title: Text("About",
+                    style: TextStyle().copyWith(color: plainWhite)),
+                leading: Icon(
+                  Icons.info_outline,
+                  color: plainWhite,
+                ),
+                onTap: () {
                   Navigator.pop(context);
-                  showDialog(context: context, builder: (context) => aboutDialog);
+                  showDialog(
+                      context: context, builder: (context) => aboutDialog);
                 },
+              ),
+              ListTile(
+                title: Text("Sign Out",
+                    style: TextStyle().copyWith(color: plainWhite)),
+                leading: Icon(
+                  Icons.power_settings_new,
+                  color: plainWhite,
+                ),
+                onTap: () => user.signOut(context),
               )
             ],
           ),
@@ -176,10 +205,7 @@ class _HomeState extends State<Home> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
-            CustomAppBar(),
-            _widgetOptions.elementAt(_selectedIndex)
-          ],
+          children: [CustomAppBar(), _widgetOptions.elementAt(_selectedIndex)],
         ),
       ),
       bottomNavigationBar: SizedBox(
@@ -193,21 +219,19 @@ class _HomeState extends State<Home> {
           unselectedItemColor: Colors.grey[300],
           unselectedIconTheme: IconThemeData().copyWith(color: offWhite),
           selectedIconTheme: IconThemeData(color: plainWhite),
-          selectedLabelStyle: TextStyle().copyWith(fontSize: 19),
-          unselectedLabelStyle: TextStyle().copyWith(fontSize: 19),
-          unselectedFontSize: 20,
-            items: [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.hourglass_empty),
-                  activeIcon: Icon(Icons.hourglass_full),
-                  label: "Pending",
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.done),
-                  activeIcon: Icon(Icons.done_all_outlined),
-                  label: "Completed"
-                  )
-        ],
+          unselectedFontSize: 15,
+          selectedFontSize: 15,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.hourglass_empty),
+              activeIcon: Icon(Icons.hourglass_full),
+              label: "Pending",
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.done),
+                activeIcon: Icon(Icons.done_all_outlined),
+                label: "Completed")
+          ],
         ),
       ),
     );
