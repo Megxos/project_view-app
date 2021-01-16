@@ -485,13 +485,7 @@ class _PendingState extends State<Pending> {
                                 child: GestureDetector(
                                   child: FlatButton(
                                     onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => BackdropFilter(
-                                                filter: ImageFilter.blur(
-                                                    sigmaX: 3, sigmaY: 3),
-                                                child: donateDialog,
-                                              ));
+                                      Navigator.pushNamed(context, "/profile");
                                     },
                                     child: Text(
                                       "Make A Donation",

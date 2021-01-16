@@ -6,6 +6,7 @@ ThemeData primaryTheme = new ThemeData(
   accentColor: Colors.pinkAccent,
   appBarTheme: AppBarTheme(
       elevation: 0,
+      centerTitle: true,
       color: Colors.indigo[500],
       iconTheme: IconThemeData(color: Colors.white),
       textTheme: TextTheme(

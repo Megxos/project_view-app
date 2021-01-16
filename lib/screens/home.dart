@@ -34,6 +34,10 @@ class _HomeState extends State<Home> {
     content: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        SizedBox(
+          height: 150,
+          child: Image.asset("assets/images/logo.png"),
+        ),
         Text(
           "Project View",
           style: TextStyle(fontSize: 25, color: Colors.grey[800]),

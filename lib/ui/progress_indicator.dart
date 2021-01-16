@@ -12,26 +12,23 @@ class ProgressIndicator {
     showDialog(
         barrierDismissible: false,
         context: context,
-        builder: (context) => BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-              child: AlertDialog(
-                  backgroundColor: Colors.transparent,
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(appAccent),
-                        strokeWidth: 9,
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        text,
-                        style: TextStyle().copyWith(color: plainWhite),
-                      )
-                    ],
-                  )),
-            ));
+        builder: (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(appAccent),
+                  strokeWidth: 9,
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Text(
+                  text,
+                  style: TextStyle().copyWith(color: plainWhite),
+                )
+              ],
+            )));
   }
 }

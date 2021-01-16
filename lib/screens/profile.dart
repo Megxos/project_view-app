@@ -204,7 +204,7 @@ class _ProfileState extends State<Profile> {
                             Row(
                               children: [
                                 Text(
-                                  "Profile",
+                                  "Details",
                                   style:
                                       TextStyle().copyWith(color: Colors.grey),
                                 ),
@@ -317,21 +317,26 @@ class _ProfileState extends State<Profile> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: offWhite,
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: lightGrey,
-                                      size: 18,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, "/account");
-                                    },
-                                  ),
-                                )
+                                currentProjectBox.get(0).owner ==
+                                        userBox.get(0).userId
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                            color: offWhite,
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.edit,
+                                            color: lightGrey,
+                                            size: 18,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, "/account");
+                                          },
+                                        ),
+                                      )
+                                    : SizedBox()
                               ],
                             ),
                           ],
@@ -344,13 +349,12 @@ class _ProfileState extends State<Profile> {
                   children: [
                     Expanded(
                       child: Container(
+                        height: 43,
                         decoration: BoxDecoration(
                           color: red,
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: FlatButton.icon(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 8.0),
                           onPressed: () => user.signOut(context, email),
                           icon: Icon(
                             Icons.power_settings_new,
