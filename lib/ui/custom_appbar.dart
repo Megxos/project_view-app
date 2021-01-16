@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/project.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_view/controllers/project.controller.dart';
+import 'package:share/share.dart';
 
 class CustomAppBar extends StatefulWidget {
   @override
@@ -28,6 +31,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
     await currentProjectModel.addProject(project, context);
 
     Navigator.pop(context);
+  }
+
+  void _copyToClipboard(String text) {
+    Navigator.pop(context);
+    Clipboard.setData(new ClipboardData(text: text));
+    customAlert.showAlert(msg: "copied");
+  }
+
+  void _shareProject(int code, String project) {
+    Navigator.pop(context);
+    try {
+      Share.share("Hey there! please use the code $code to join my project",
+          subject: "Join My Project - $project");
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: e);
+    }
   }
 
   final _containerKey = GlobalKey();
@@ -129,11 +148,32 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                               fontSize: 20.0),
                                         ),
                                         trailing: PopupMenuButton(
+                                          padding: EdgeInsets.zero,
                                           icon: Icon(
                                             Icons.more_vert,
                                             color: plainWhite,
                                           ),
                                           itemBuilder: (context) => [
+                                            PopupMenuItem(
+                                              child: FlatButton.icon(
+                                                  icon: Icon(
+                                                    Icons.content_copy,
+                                                    color: secondaryColor,
+                                                  ),
+                                                  label: Text("Copy code"),
+                                                  onPressed: () =>
+                                                      _copyToClipboard(project
+                                                          .code
+                                                          .toString())),
+                                            ),
+                                            PopupMenuItem(
+                                              child: FlatButton.icon(
+                                                onPressed: () => _shareProject(
+                                                    project.code, project.name),
+                                                icon: Icon(Icons.share),
+                                                label: Text("Share"),
+                                              ),
+                                            ),
                                             PopupMenuItem(
                                                 enabled: currentProjectBox
                                                             .get(0)
@@ -161,14 +201,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                                                     project);
                                                           }
                                                         : null)),
-                                            PopupMenuItem(
-                                                child: FlatButton.icon(
-                                                    icon: Icon(
-                                                      Icons.content_copy,
-                                                      color: secondaryColor,
-                                                    ),
-                                                    label: Text("Copy code"),
-                                                    onPressed: () {}))
                                           ],
                                         )),
                                   ))

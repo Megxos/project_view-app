@@ -66,25 +66,30 @@ class Account {
   }
 
   Future<void> getAccounts() async {
-    UserModel _defaultValue = UserModel(userId: -1, token: "not set");
-    final userId = userBox.get(0, defaultValue: _defaultValue).userId;
-    final token = userBox.get(0, defaultValue: _defaultValue).token;
+    try {
+      UserModel _defaultValue = UserModel(userId: -1, token: "not set");
+      final userId = userBox.get(0, defaultValue: _defaultValue).userId;
+      final token = userBox.get(0, defaultValue: _defaultValue).token;
 
-    Response response = await get(join(baseUrl, "accounts", userId.toString()),
-        headers: {"token": token});
-    final body = jsonDecode(response.body);
+      Response response = await get(
+          join(baseUrl, "accounts", userId.toString()),
+          headers: {"token": token});
+      final body = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final List accounts = body["data"]["accounts"];
-      for (int i = 0; i < accounts.length; i++) {
-        accBox.put(
-            accounts[i]["project"],
-            AccountModel(
-                accNo: accounts[i]["acc_no"],
-                accName: accounts[i]["acc_name"],
-                accBank: accounts[i]["acc_bank"],
-                project: accounts[i]["project"]));
+      if (response.statusCode == 200) {
+        final List accounts = body["data"]["accounts"];
+        for (int i = 0; i < accounts.length; i++) {
+          accBox.put(
+              accounts[i]["project"],
+              AccountModel(
+                  accNo: accounts[i]["acc_no"],
+                  accName: accounts[i]["acc_name"],
+                  accBank: accounts[i]["acc_bank"],
+                  project: accounts[i]["project"]));
+        }
       }
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
     }
   }
 
@@ -100,9 +105,6 @@ class Account {
     Map body = {"account_bank": bank, "account_number": number};
     Response response =
         await post(join(bankUrl, "payment", "bank", "verify"), body: body);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return {};
+    return jsonDecode(response.body);
   }
 }

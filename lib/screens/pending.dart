@@ -228,10 +228,12 @@ class _PendingState extends State<Pending> {
           key: _formkey,
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             TextFormField(
+              autofocus: true,
               controller: itemController,
               validator: (value) =>
                   value.length < 3 ? "min of 3 characters" : null,
-              maxLength: 25,
+              maxLength: 20,
+              maxLengthEnforced: true,
               decoration: InputDecoration(
                   counterText: '', hintText: "Cement", labelText: "Item"),
             ),
@@ -337,46 +339,38 @@ class _PendingState extends State<Pending> {
           ),
         ]));
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 2.0,
-        ),
-        GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height -
-                40 -
-                67 -
-                100 -
-                MediaQuery.of(context).padding.top,
-            width: MediaQuery.of(context).size.width, //or double.infinity
-            child: RefreshIndicator(
-              displacement: 0,
-              onRefresh: () {
-                Future<void> refresh() async {
-                  await item.getItems(currentProjectBox.get(0).code, context);
-                }
-
-                return refresh();
+    return Container(
+      height: MediaQuery.of(context).size.height -
+          67 -
+          100 -
+          MediaQuery.of(context).padding.top,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
               },
-              child: ValueListenableBuilder(
-                valueListenable: itemBox.listenable(),
-                builder: (context, _, __) {
-                  return Stack(alignment: Alignment.center, children: [
-                    _isLoading ? CircularProgressIndicator() : SizedBox(),
-                    ListView(
-                      padding: EdgeInsets.zero,
-                      children: [
-                        DataTableTheme(
-                          data: DataTableThemeData(
-                              dataTextStyle:
-                                  TextStyle(fontWeight: FontWeight.bold)),
+              child: RefreshIndicator(
+                displacement: 0,
+                onRefresh: () {
+                  Future<void> refresh() async {
+                    await item.getItems(currentProjectBox.get(0).code, context);
+                  }
+
+                  return refresh();
+                },
+                child: ValueListenableBuilder(
+                  valueListenable: itemBox.listenable(),
+                  builder: (context, _, __) {
+                    return Stack(alignment: Alignment.center, children: [
+                      _isLoading ? CircularProgressIndicator() : SizedBox(),
+                      SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
                           child: DataTable(
-                              sortColumnIndex: 2,
-                              sortAscending: false,
                               showCheckboxColumn: _showCheckboxColumn,
                               dividerThickness: 3,
                               showBottomBorder: true,
@@ -445,81 +439,82 @@ class _PendingState extends State<Pending> {
                                           ]))
                                   .toList()),
                         ),
-                      ],
-                    )
-                  ]);
-                },
+                      )
+                    ]);
+                  },
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          height: 40,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-            child: Row(
-              children: [
-                ValueListenableBuilder(
-                  valueListenable: currentProjectBox.listenable(),
-                  builder: (context, Box<CurrentProject> box, _) {
-                    return currentProjectBox
-                                .get(0, defaultValue: _defaultProject)
-                                .owner ==
-                            userBox
-                                .get(0, defaultValue: _defaultUserValue)
-                                .userId
-                        ? Expanded(
-                            child: GestureDetector(
-                            child: OutlineButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => itemDialog);
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0)),
-                              child: Text("Add New Item",
-                                  style: TextStyle(color: Colors.indigo[500])),
-                              borderSide: BorderSide(
-                                color: Colors.indigo[500],
-                                width: 3,
-                              ),
-                            ),
-                          ))
-                        : Expanded(
-                            child: ButtonTheme(
+          SizedBox(
+            height: 40,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+              child: Row(
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: currentProjectBox.listenable(),
+                    builder: (context, Box<CurrentProject> box, _) {
+                      return currentProjectBox
+                                  .get(0, defaultValue: _defaultProject)
+                                  .owner ==
+                              userBox
+                                  .get(0, defaultValue: _defaultUserValue)
+                                  .userId
+                          ? Expanded(
                               child: GestureDetector(
-                                child: FlatButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => BackdropFilter(
-                                              filter: ImageFilter.blur(
-                                                  sigmaX: 3, sigmaY: 3),
-                                              child: donateDialog,
-                                            ));
-                                  },
-                                  child: Text(
-                                    "Make A Donation",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  color: primaryColor,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 0, vertical: 8.0),
+                              child: OutlineButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => itemDialog);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0)),
+                                child: Text("Add New Item",
+                                    style:
+                                        TextStyle(color: Colors.indigo[500])),
+                                borderSide: BorderSide(
+                                  color: Colors.indigo[500],
+                                  width: 3,
                                 ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0)),
-                              buttonColor: Colors.indigo[500],
-                            ),
-                          );
-                  },
-                )
-              ],
+                            ))
+                          : Expanded(
+                              child: ButtonTheme(
+                                child: GestureDetector(
+                                  child: FlatButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => BackdropFilter(
+                                                filter: ImageFilter.blur(
+                                                    sigmaX: 3, sigmaY: 3),
+                                                child: donateDialog,
+                                              ));
+                                    },
+                                    child: Text(
+                                      "Make A Donation",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    color: primaryColor,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 0, vertical: 8.0),
+                                  ),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0)),
+                                buttonColor: Colors.indigo[500],
+                              ),
+                            );
+                    },
+                  )
+                ],
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

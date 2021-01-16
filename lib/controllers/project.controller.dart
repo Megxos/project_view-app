@@ -32,7 +32,7 @@ class Project {
   }
 
   // join a friends project using project code
-  Future<int> joinProject(code, BuildContext context) async {
+  Future<void> joinProject(code, BuildContext context) async {
     try {
       String token = userBox.get(0).token;
       final String userId = userBox.get(0).userId.toString();
@@ -118,7 +118,7 @@ class Project {
       final Response response = await delete(
           join(baseUrl, "projects", "delete", project.id.toString()),
           headers: {"token": token});
-
+      print(response.body);
       if (response.statusCode != 200) throw Error();
     } catch (e) {
       customAlert.showAlert(isSuccess: false, msg: "Something went wrong");

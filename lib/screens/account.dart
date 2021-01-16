@@ -45,15 +45,24 @@ class _AccountDetailsState extends State<AccountDetails> {
     _dropDownText = "Select Bank";
   }
 
+  Color _accNoBorderColor = appAccent;
+
   void verifyAccount(bank, number) async {
     setState(() {
       _fetchName = true;
     });
     final Map response = await account.verifyAccount(bank, number);
-    setState(() {
-      _accName = response["data"]["account_name"];
-      _fetchName = false;
-    });
+    if (response["status"] == "success") {
+      setState(() {
+        _accName = response["data"]["account_name"];
+        _fetchName = false;
+      });
+    } else {
+      setState(() {
+        _accNoBorderColor = red;
+        _fetchName = false;
+      });
+    }
   }
 
   @override
@@ -180,11 +189,12 @@ class _AccountDetailsState extends State<AccountDetails> {
                             hintText: "0123456789",
                             fillColor: plainWhite,
                             counterText: "",
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(color: appAccent)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide()
+                                    .copyWith(color: _accNoBorderColor)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                              color: appAccent,
+                              color: _accNoBorderColor,
                             ))),
                       ),
                       SizedBox(
