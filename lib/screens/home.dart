@@ -197,7 +197,8 @@ class _HomeState extends State<Home> {
                   Icons.power_settings_new,
                   color: plainWhite,
                 ),
-                onTap: () => user.signOut(context),
+                onTap: () => user.signOut(context,
+                    userBox.get(0, defaultValue: UserModel(email: "")).email),
               )
             ],
           ),

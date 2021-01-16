@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:project_view/controllers/account.controller.dart';
@@ -12,6 +13,7 @@ import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 import 'package:project_view/ui/custom_alerts.dart';
+import 'package:project_view/ui/colors.dart';
 
 User user = User();
 
@@ -89,14 +91,44 @@ class User {
     }
   }
 
-  void signOut(BuildContext context) {
-    userBox.clear();
-    accBox.clear();
-    itemBox.clear();
-    projectBox.clear();
-    currentProjectBox.clear();
-    completedItemBox.clear();
-    Navigator.pushReplacementNamed(context, "/signin");
+  void clearData(context) async {
+    await userBox.clear();
+    await accBox.clear();
+    await itemBox.clear();
+    await projectBox.clear();
+    await currentProjectBox.clear();
+    await completedItemBox.clear();
+    await Navigator.of(context)
+        .pushNamedAndRemoveUntil("/signin", (Route<dynamic> route) => false);
+  }
+
+  void signOut(
+    BuildContext context,
+    email,
+  ) {
+    final signOutDialog = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        child: AlertDialog(
+          title: Text("Sign Out Now?"),
+          content: Text(email),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "No",
+                  style: TextStyle().copyWith(color: secondaryColor),
+                )),
+            FlatButton(
+                onPressed: () => clearData(context),
+                child: Text(
+                  "Yes",
+                  style: TextStyle().copyWith(color: red),
+                ))
+          ],
+        ));
+    showDialog(context: context, builder: (context) => signOutDialog);
   }
 
   Future<void> signup(email, password, BuildContext context) async {

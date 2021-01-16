@@ -20,7 +20,7 @@ import 'package:project_view/screens/account.dart';
 import 'package:project_view/screens/profile.dart';
 import 'package:project_view/ui/colors.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final documentPath = await getApplicationDocumentsDirectory();
   Hive.init(join(documentPath.path, "models"));
@@ -47,7 +47,6 @@ class ProjectView extends StatefulWidget {
 }
 
 class _ProjectViewState extends State<ProjectView> {
-
   final configBox = Hive.box<AppConfig>("config");
 
   final userBox = Hive.box<UserModel>("user");
@@ -55,28 +54,20 @@ class _ProjectViewState extends State<ProjectView> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown
-      ]
-    );
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-          statusBarColor: primaryColor,
-        systemNavigationBarColor: primaryColor
-      )
-    );
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: primaryColor, systemNavigationBarColor: primaryColor));
 
     // initialize config holding user settings
     appConfig.init();
-  // check if user is a first time user
+    // check if user is a first time user
     bool isFirstTimeUser = configBox.get(0).isFirstTimeUser;
 
     String firstScreen = "/onboarding";
 
-    if(!isFirstTimeUser && userBox.get(0) == null){
+    if (!isFirstTimeUser && userBox.get(0) == null) {
       firstScreen = "/signin";
-    }else if(userBox.get(0) != null){
+    } else if (userBox.get(0) != null) {
       firstScreen = "/home";
     }
     return MaterialApp(
@@ -89,7 +80,7 @@ class _ProjectViewState extends State<ProjectView> {
         "/onboarding": (context) => OnBoarding(),
         "/project/new": (context) => NewProject(),
         "/signin": (context) => Signin(),
-        "/signup": (context)=> SignUp(),
+        "/signup": (context) => SignUp(),
         "/profile": (context) => Profile()
       },
     );

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
@@ -89,75 +90,59 @@ class _ProfileState extends State<Profile> {
     String accNo = accDetails.accNo;
     String accName = accDetails.accName;
 
-    final signOutDialog = AlertDialog(
-      title: Text("Sign Out Now?"),
-      content: Text(email),
-      actions: [
-        FlatButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(
-              "No",
-              style: TextStyle().copyWith(color: secondaryColor),
-            )),
-        FlatButton(
-            onPressed: () => user.signOut(context),
-            child: Text(
-              "Yes",
-              style: TextStyle().copyWith(color: red),
-            ))
-      ],
-    );
-
-    final editProfile = AlertDialog(
-      title: Text("Edit Profile"),
-      content: Form(
-        key: _formkey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: firstnameController,
-              validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
-              decoration: InputDecoration(labelText: "Firstname"),
+    final editProfile = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        child: AlertDialog(
+          title: Text("Edit Profile"),
+          content: Form(
+            key: _formkey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: firstnameController,
+                  validator: (value) =>
+                      value.length <= 3 ? "min of 3 chars" : null,
+                  decoration: InputDecoration(labelText: "Firstname"),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                TextFormField(
+                  controller: lastnameController,
+                  validator: (value) =>
+                      value.length <= 3 ? "min of 3 chars" : null,
+                  decoration: InputDecoration(labelText: "Lastname"),
+                )
+              ],
             ),
-            SizedBox(
-              height: 10.0,
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.close,
+                color: Colors.red,
+                size: 40,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            TextFormField(
-              controller: lastnameController,
-              validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
-              decoration: InputDecoration(labelText: "Lastname"),
-            )
+            IconButton(
+              icon: Icon(
+                Icons.done,
+                color: Colors.green,
+                size: 40,
+              ),
+              onPressed: () {
+                if (_formkey.currentState.validate()) {
+                  updateProfile();
+                }
+              },
+            ),
           ],
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.close,
-            color: Colors.red,
-            size: 40,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.done,
-            color: Colors.green,
-            size: 40,
-          ),
-          onPressed: () {
-            if (_formkey.currentState.validate()) {
-              updateProfile();
-            }
-          },
-        ),
-      ],
-    );
+        ));
+
     return Scaffold(
       backgroundColor: offWhite,
       appBar: AppBar(
@@ -366,11 +351,7 @@ class _ProfileState extends State<Profile> {
                         child: FlatButton.icon(
                           padding: EdgeInsets.symmetric(
                               horizontal: 0, vertical: 8.0),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => signOutDialog);
-                          },
+                          onPressed: () => user.signOut(context, email),
                           icon: Icon(
                             Icons.power_settings_new,
                             color: plainWhite,
