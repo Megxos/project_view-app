@@ -194,86 +194,93 @@ class _PendingState extends State<Pending> {
     }
 
     // dialog to add new item
-    final itemDialog = BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-      child: AlertDialog(
-        scrollable: true,
-        title: Text("Add New Item"),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.red,
-              size: 40,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+    final itemDialog = AlertDialog(
+      scrollable: true,
+      title: Text("Add New Item"),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.close,
+            color: Colors.red,
+            size: 40,
           ),
-          IconButton(
-            icon: Icon(
-              Icons.done,
-              color: Colors.green,
-              size: 40,
-            ),
-            onPressed: () {
-              if (_formkey.currentState.validate()) {
-                addItem();
-                Navigator.pop(context);
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.done,
+            color: Colors.green,
+            size: 40,
+          ),
+          onPressed: () {
+            if (_formkey.currentState.validate()) {
+              addItem();
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ],
+      content: Form(
+        key: _formkey,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextFormField(
+            autofocus: true,
+            controller: itemController,
+            validator: (value) =>
+                value.length < 3 ? "min of 3 characters" : null,
+            maxLength: 20,
+            maxLengthEnforced: true,
+            decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                counterText: '',
+                hintText: "Cement",
+                labelText: "Item"),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TextFormField(
+            controller: priceController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value.length < 1) {
+                return "field is required";
+              } else if (int.parse(value) < 1) {
+                return "cannot be 0";
+              } else {
+                return null;
               }
             },
+            decoration: InputDecoration(
+              labelText: "Price",
+              hintText: "5,000",
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+            ),
           ),
-        ],
-        content: Form(
-          key: _formkey,
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            TextFormField(
-              autofocus: true,
-              controller: itemController,
-              validator: (value) =>
-                  value.length < 3 ? "min of 3 characters" : null,
-              maxLength: 20,
-              maxLengthEnforced: true,
-              decoration: InputDecoration(
-                  counterText: '', hintText: "Cement", labelText: "Item"),
+          SizedBox(
+            height: 10,
+          ),
+          TextFormField(
+            controller: quantityController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value.length < 1) {
+                return "field is required";
+              } else if (int.parse(value) < 1) {
+                return "cannot be 0";
+              } else {
+                return null;
+              }
+            },
+            decoration: InputDecoration(
+              hintText: "3",
+              labelText: "Quantity",
+              floatingLabelBehavior: FloatingLabelBehavior.never,
             ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value.length < 1) {
-                  return "field is required";
-                } else if (int.parse(value) < 1) {
-                  return "cannot be 0";
-                } else {
-                  return null;
-                }
-              },
-              decoration:
-                  InputDecoration(labelText: "Price", hintText: "5,000"),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: quantityController,
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value.length < 1) {
-                  return "field is required";
-                } else if (int.parse(value) < 1) {
-                  return "cannot be 0";
-                } else {
-                  return null;
-                }
-              },
-              decoration: InputDecoration(hintText: "3", labelText: "Quantity"),
-            ),
-          ]),
-        ),
+          ),
+        ]),
       ),
     );
 
@@ -374,6 +381,9 @@ class _PendingState extends State<Pending> {
                               showCheckboxColumn: _showCheckboxColumn,
                               dividerThickness: 3,
                               showBottomBorder: true,
+                              headingTextStyle: TextStyle().copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800]),
                               columns: [
                                 DataColumn(
                                   label: Text(

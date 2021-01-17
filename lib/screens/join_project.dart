@@ -26,85 +26,84 @@ class _JoinProjectState extends State<JoinProject> {
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-        child: AlertDialog(
-          title: Text("Join Project"),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+    return AlertDialog(
+      title: Text("Join Project"),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(child: Text("Enter project code to join project")),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.info,
-                        color: secondaryColor,
-                      ),
-                      tooltip: "Project code is shared by project owner",
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        child: PinPut(
-                      fieldsCount: 5,
-                      autofocus: true,
-                      controller: _codeController,
-                      validator: (value) =>
-                          value.length != 5 ? "Invalid project code" : null,
-                      keyboardType: TextInputType.number,
-                      inputDecoration: InputDecoration(
-                          filled: false,
-                          counterText: "",
-                          enabledBorder:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                      submittedFieldDecoration: BoxDecoration(
-                          border: Border.all(width: 2, color: secondaryColor),
-                          borderRadius: BorderRadius.circular(10)),
-                      selectedFieldDecoration: _codeDecoration,
-                      followingFieldDecoration: _codeDecoration,
-                    )),
-                  ],
+                Expanded(child: Text("Enter project code to join project")),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.info,
+                    color: secondaryColor,
+                  ),
+                  tooltip: "Project code is shared by project owner",
                 )
               ],
             ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.red,
-                size: 40,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            SizedBox(
+              height: 10,
             ),
-            IconButton(
-              icon: Icon(
-                Icons.done,
-                color: Colors.green,
-                size: 40,
-              ),
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  print(_codeController.text);
-                  joinProject();
-                }
-              },
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: PinPut(
+                  fieldsCount: 5,
+                  autofocus: true,
+                  controller: _codeController,
+                  validator: (value) =>
+                      value.length != 5 ? "Invalid project code" : null,
+                  keyboardType: TextInputType.number,
+                  inputDecoration: InputDecoration(
+                      filled: false,
+                      counterText: "",
+                      enabledBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
+                      focusedBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
+                  submittedFieldDecoration: BoxDecoration(
+                      border: Border.all(width: 2, color: primaryColor),
+                      borderRadius: BorderRadius.circular(5)),
+                  selectedFieldDecoration: _codeDecoration,
+                  followingFieldDecoration: _codeDecoration,
+                )),
+              ],
+            )
           ],
-        ));
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.close,
+            color: Colors.red,
+            size: 40,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.done,
+            color: Colors.green,
+            size: 40,
+          ),
+          onPressed: () {
+            if (_formKey.currentState.validate()) {
+              print(_codeController.text);
+              joinProject();
+            }
+          },
+        ),
+      ],
+    );
   }
 }

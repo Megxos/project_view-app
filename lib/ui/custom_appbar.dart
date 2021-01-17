@@ -83,16 +83,23 @@ class _CustomAppBarState extends State<CustomAppBar> {
           padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(50.0),
-                    ),
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(50.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: offWhite,
+                            spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(0, 3),
+                          ),
+                        ]),
                     child: IconButton(
                       icon: Icon(
                         Icons.menu,
@@ -103,17 +110,32 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       },
                     ),
                   ),
+                  Text(
+                    "Project View",
+                    style: TextStyle().copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                        fontSize: 22),
+                  ),
                   Container(
                     decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(50.0),
-                    ),
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(50.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: offWhite,
+                            spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(0, 3),
+                          ),
+                        ]),
                     child: IconButton(
-                      icon: Icon(Icons.account_circle, color: plainWhite),
+                      icon: Icon(Icons.account_circle_outlined,
+                          color: plainWhite),
                       onPressed: () => Navigator.pushNamed(context, "/profile"),
                       padding: EdgeInsets.zero,
                     ),
-                  )
+                  ),
                 ],
               ),
               ValueListenableBuilder(

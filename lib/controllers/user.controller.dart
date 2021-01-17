@@ -106,28 +106,26 @@ class User {
     BuildContext context,
     email,
   ) {
-    final signOutDialog = BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-        child: AlertDialog(
-          title: Text("Sign Out Now?"),
-          content: Text(email),
-          actions: [
-            FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "No",
-                  style: TextStyle().copyWith(color: secondaryColor),
-                )),
-            FlatButton(
-                onPressed: () => clearData(context),
-                child: Text(
-                  "Yes",
-                  style: TextStyle().copyWith(color: red),
-                ))
-          ],
-        ));
+    final signOutDialog = AlertDialog(
+      title: Text("Sign Out Now?"),
+      content: Text(email),
+      actions: [
+        FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              "No",
+              style: TextStyle().copyWith(color: secondaryColor),
+            )),
+        FlatButton(
+            onPressed: () => clearData(context),
+            child: Text(
+              "Yes",
+              style: TextStyle().copyWith(color: red),
+            ))
+      ],
+    );
     showDialog(context: context, builder: (context) => signOutDialog);
   }
 

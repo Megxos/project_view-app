@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:project_view/models/app_config.dart';
 import 'package:project_view/ui/colors.dart';
@@ -61,34 +62,42 @@ class OnBoarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IntroductionScreen(
-          pages: pages,
-          globalBackgroundColor: secondaryColor,
-          showNextButton: true,
-          next: Icon(
-            Icons.arrow_forward_ios,
-            color: plainWhite,
-          ),
-          showSkipButton: true,
-          skip: Text(
-            "Skip",
-            style: TextStyle().copyWith(color: plainWhite),
-          ),
-          dotsDecorator: DotsDecorator(
-            color: plainWhite,
-            activeSize: Size.square(20),
-            activeColor: Colors.pinkAccent,
-          ),
-          onDone: () {
-            configBox.get(0).isFirstTimeUser = false;
-            Navigator.pushReplacementNamed(context, "/signin");
-          },
-          done: Icon(
-            Icons.done,
-            size: 40,
-            color: appAccent,
-          )),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: primaryColor,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: secondaryColor,
+      ),
+      child: Scaffold(
+        body: IntroductionScreen(
+            pages: pages,
+            globalBackgroundColor: secondaryColor,
+            showNextButton: true,
+            next: Icon(
+              Icons.arrow_forward_ios,
+              color: plainWhite,
+            ),
+            showSkipButton: true,
+            skip: Text(
+              "Skip",
+              style: TextStyle().copyWith(color: plainWhite),
+            ),
+            dotsDecorator: DotsDecorator(
+              color: plainWhite,
+              activeSize: Size.square(20),
+              activeColor: Colors.pinkAccent,
+            ),
+            onDone: () {
+              configBox.get(0).isFirstTimeUser = false;
+              Navigator.pushReplacementNamed(context, "/signin");
+            },
+            done: Icon(
+              Icons.done,
+              size: 40,
+              color: appAccent,
+            )),
+      ),
     );
   }
 }

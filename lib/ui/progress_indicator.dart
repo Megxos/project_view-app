@@ -11,6 +11,7 @@ class ProgressIndicator {
   void loading({context, text = "Please wait"}) {
     showDialog(
         barrierDismissible: false,
+        barrierColor: Colors.transparent,
         context: context,
         builder: (context) => Dialog(
             backgroundColor: Colors.transparent,
@@ -19,15 +20,8 @@ class ProgressIndicator {
               children: [
                 CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(appAccent),
-                  strokeWidth: 9,
+                  strokeWidth: 7,
                 ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  text,
-                  style: TextStyle().copyWith(color: plainWhite),
-                )
               ],
             )));
   }

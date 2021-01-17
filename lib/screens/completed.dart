@@ -34,6 +34,8 @@ class Completed extends StatelessWidget {
             child: ValueListenableBuilder(
               valueListenable: completedItemBox.listenable(),
               builder: (context, _, __) => DataTable(
+                  headingTextStyle: TextStyle().copyWith(
+                      fontWeight: FontWeight.w600, color: Colors.grey[800]),
                   dividerThickness: 3,
                   showBottomBorder: true,
                   columns: [

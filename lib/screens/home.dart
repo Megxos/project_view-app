@@ -7,10 +7,12 @@ import 'package:project_view/models/user.dart';
 import 'package:project_view/screens/pending.dart';
 import 'package:project_view/screens/new_project.dart';
 import 'package:project_view/ui/colors.dart';
+import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/custom_appbar.dart';
 import 'package:project_view/screens/completed.dart';
 import 'package:project_view/screens/join_project.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -51,9 +53,12 @@ class _HomeState extends State<Home> {
   Widget _updateAccountDetails() {
     if (currentProjectBox.get(0).owner == userBox.get(0).userId)
       return ListTile(
-        title: Text("Update Account Details",
-            style: TextStyle().copyWith(color: plainWhite)),
-        leading: Icon(Icons.credit_card, color: plainWhite),
+        title: Text(
+          "Update Account Details",
+        ),
+        leading: Icon(
+          Icons.credit_card,
+        ),
         onTap: () {
           Navigator.pushReplacementNamed(context, "/account");
         },
@@ -63,6 +68,20 @@ class _HomeState extends State<Home> {
   }
 
   List<Widget> _widgetOptions = [Pending(), Completed()];
+
+  Future<void> _launchUri(dynamic url) async {
+    try {
+      await launch(url.toString());
+    } catch (e) {
+      customAlert.showAlert(isSuccess: false, msg: "Could not open link");
+    }
+  }
+
+  final Uri _emailUri =
+      Uri(scheme: "mainto", path: "melijah200@gmail.com", queryParameters: {
+    "subject": "Project View App",
+    "body": "I have been using Project View app and..."
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,110 +94,94 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
-          elevation: 0,
+          elevation: 1,
           child: ValueListenableBuilder(
             valueListenable: currentProjectBox.listenable(),
             builder: (context, _, __) => Container(
               height: 500,
-              color: primaryColor,
-              child: Column(
-                children: [
-                  SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text("Project View",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold)),
+                        ListTile(
+                          title: Text(
+                            "Add New Project",
+                          ),
+                          leading: Icon(Icons.add),
+                          onTap: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (context) => NewProject());
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.people),
+                          title: Text(
+                            "Join Project",
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (context) => JoinProject());
+                          },
+                        ),
+                        currentProjectBox.get(0) == null
+                            ? SizedBox()
+                            : _updateAccountDetails(),
+                        ListTile(
+                            leading: Icon(
+                              Icons.mail,
                             ),
-                            IconButton(
-                              padding: EdgeInsets.all(0),
-                              tooltip: "Close drawer",
-                              icon: Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            )
-                          ],
+                            title: Text(
+                              "Contact",
+                            ),
+                            onTap: () async {
+                              await _launchUri(_emailUri);
+                            }),
+                        ListTile(
+                          title: Text(
+                            "About",
+                          ),
+                          leading: Icon(
+                            Icons.info_outline,
+                          ),
+                          onTap: () {
+                            showAboutDialog(
+                                applicationVersion: "1.0.0",
+                                context: context,
+                                applicationIcon: SizedBox(
+                                  height: 70,
+                                  child: Image.asset(
+                                    "assets/images/logo.png",
+                                  ),
+                                ),
+                                applicationName: "Project View");
+                          },
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  // Divider(color: plainWhite, height: 70,),
-                  ListTile(
-                    title: Text(
-                      "Add New Project",
-                      style: TextStyle().copyWith(color: plainWhite),
-                    ),
-                    leading: Icon(Icons.add, color: plainWhite),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                          context: context, builder: (context) => NewProject());
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people, color: plainWhite),
-                    title: Text("Join Project",
-                        style: TextStyle().copyWith(color: plainWhite)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                          context: context,
-                          builder: (context) => JoinProject());
-                    },
-                  ),
-                  currentProjectBox.get(0) == null
-                      ? SizedBox()
-                      : _updateAccountDetails(),
-                  ListTile(
-                    leading: Icon(Icons.mail, color: plainWhite),
-                    title: Text("Contact",
-                        style: TextStyle().copyWith(color: plainWhite)),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text("About",
-                        style: TextStyle().copyWith(color: plainWhite)),
-                    leading: Icon(
-                      Icons.info_outline,
-                      color: plainWhite,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                          context: context, builder: (context) => aboutDialog);
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Sign Out",
-                        style: TextStyle().copyWith(color: plainWhite)),
-                    leading: Icon(
-                      Icons.power_settings_new,
-                      color: plainWhite,
-                    ),
-                    onTap: () => user.signOut(
-                        context,
-                        userBox
-                            .get(0, defaultValue: UserModel(email: ""))
-                            .email),
-                  )
-                ],
+                    Container(
+                      color: red,
+                      child: ListTile(
+                        title: Text("Sign Out",
+                            style: TextStyle().copyWith(color: plainWhite)),
+                        leading: Icon(
+                          Icons.power_settings_new,
+                          color: plainWhite,
+                        ),
+                        onTap: () => user.signOut(
+                            context,
+                            userBox
+                                .get(0, defaultValue: UserModel(email: ""))
+                                .email),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -203,9 +206,8 @@ class _HomeState extends State<Home> {
               currentIndex: _selectedIndex.value,
               onTap: _onItemTapped,
               selectedItemColor: primaryColor,
-              unselectedItemColor: Colors.grey[300],
-              unselectedIconTheme:
-                  IconThemeData().copyWith(color: primaryColor),
+              unselectedItemColor: lightGrey,
+              unselectedIconTheme: IconThemeData().copyWith(color: lightGrey),
               selectedIconTheme: IconThemeData(color: primaryColor),
               unselectedFontSize: 15,
               selectedFontSize: 15,

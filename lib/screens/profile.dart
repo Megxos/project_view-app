@@ -159,7 +159,8 @@ class _ProfileState extends State<Profile> {
               "Profile",
               style: TextStyle().copyWith(color: primaryColor),
             ),
-            elevation: 0,
+            elevation: 1,
+            shadowColor: offWhite,
             leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);

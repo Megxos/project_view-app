@@ -8,7 +8,7 @@ ThemeData primaryTheme = new ThemeData(
   appBarTheme: AppBarTheme(
       elevation: 0,
       centerTitle: true,
-      color: primaryColor,
+      color: plainWhite,
       iconTheme: IconThemeData(color: Colors.white),
       textTheme: TextTheme(
         headline6: TextStyle(
@@ -50,10 +50,18 @@ ThemeData primaryTheme = new ThemeData(
       filled: true,
       fillColor: offWhite,
       enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(width: 0, color: Color(0xe3e9e9e0))),
+        borderSide: BorderSide(width: 0, color: Color(0xe3e9e9e0)),
+      ),
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20.0),
-          borderSide: BorderSide(color: secondaryColor, width: 2))),
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: BorderSide(color: secondaryColor, width: 2),
+      ),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          borderSide: BorderSide(
+            color: primaryColor,
+            width: 2,
+          ))),
   canvasColor: Colors.white,
 );
 

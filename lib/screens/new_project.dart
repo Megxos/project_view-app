@@ -32,8 +32,9 @@ class NewProject extends StatelessWidget {
                 Expanded(
                   child: FlatButton(
                     color: Colors.indigo[500],
+                    padding: EdgeInsets.all(10.0),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
+                        borderRadius: BorderRadius.circular(5.0)),
                     child: Text(
                       "Add",
                       style: TextStyle(color: Colors.white),
