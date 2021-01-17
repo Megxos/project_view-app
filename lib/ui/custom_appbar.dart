@@ -74,9 +74,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return Container(
       height: 120.0,
       key: _containerKey,
-      decoration: BoxDecoration(color: primaryColor),
+      decoration: BoxDecoration(
+        color: plainWhite,
+        boxShadow: [BoxShadow(color: primaryColor)],
+      ),
       child: SafeArea(
         child: Container(
+          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,19 +88,31 @@ class _CustomAppBarState extends State<CustomAppBar> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.white,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(50.0),
                     ),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.menu,
+                        color: plainWhite,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.account_circle, color: plainWhite),
-                    onPressed: () => Navigator.pushNamed(context, "/profile"),
-                    padding: EdgeInsets.zero,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.account_circle, color: plainWhite),
+                      onPressed: () => Navigator.pushNamed(context, "/profile"),
+                      padding: EdgeInsets.zero,
+                    ),
                   )
                 ],
               ),
@@ -107,26 +123,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     child: ValueListenableBuilder(
                       valueListenable: projectBox.listenable(),
                       builder: (context, _, __) => Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 0, 8, 0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 8, 0),
                         child: DropdownButton<ProjectModel>(
                           isDense: false,
                           iconSize: 35,
                           isExpanded: true,
-                          elevation: 0,
+                          elevation: 4,
                           style: TextStyle().copyWith(
-                              color: plainWhite,
-                              fontSize: 18,
-                              fontFamily: "SFProText"),
-                          dropdownColor: primaryColor,
+                            color: primaryColor,
+                            fontSize: 18,
+                          ),
+                          // dropdownColor: primaryColor,
                           icon: Icon(
                             Icons.keyboard_arrow_down,
-                            color: Colors.white,
+                            color: primaryColor,
                           ),
                           hint: Align(
                             child: Text(dropDownText.value,
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryColor,
+                                )),
                             alignment: Alignment.centerLeft,
                           ),
                           onChanged: (ProjectModel project) {
@@ -144,14 +161,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                         title: Text(
                                           "${project.name} (${project.code})",
                                           style: TextStyle().copyWith(
-                                              color: plainWhite,
+                                              color: Colors.black,
                                               fontSize: 20.0),
                                         ),
                                         trailing: PopupMenuButton(
                                           padding: EdgeInsets.zero,
                                           icon: Icon(
                                             Icons.more_vert,
-                                            color: plainWhite,
+                                            color: Colors.black,
                                           ),
                                           itemBuilder: (context) => [
                                             PopupMenuItem(
@@ -186,7 +203,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                                       Icons.delete,
                                                       color: red,
                                                     ),
-                                                    label: Text("delete"),
+                                                    label: Text("Delete"),
                                                     onPressed: currentProjectBox
                                                                 .get(0)
                                                                 .code !=

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:project_view/controllers/user.controller.dart';
@@ -143,233 +144,252 @@ class _ProfileState extends State<Profile> {
           ],
         ));
 
-    return Scaffold(
-      backgroundColor: offWhite,
-      appBar: AppBar(
-          title: Text(
-            "Profile",
-            style: TextStyle().copyWith(color: plainWhite),
-          ),
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back_ios),
-          )),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 50.0, horizontal: 0),
-                      decoration: _containerDecor,
-                      child: Column(
-                        children: [
-                          Center(
-                            child: CircleAvatar(
-                              backgroundColor: secondaryColor,
-                              child: Icon(
-                                Icons.person_outline,
-                                size: 50,
-                              ),
-                              radius: 50,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(email),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Container(
-                      decoration: _containerDecor,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40.0, vertical: 20),
-                      child: SingleChildScrollView(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+          statusBarColor: plainWhite,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: offWhite),
+      child: Scaffold(
+        backgroundColor: offWhite,
+        appBar: AppBar(
+            backgroundColor: plainWhite,
+            iconTheme: IconThemeData(color: primaryColor),
+            title: Text(
+              "Profile",
+              style: TextStyle().copyWith(color: primaryColor),
+            ),
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back_ios),
+            )),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 50.0, horizontal: 0),
+                        decoration: _containerDecor,
                         child: Column(
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  "Details",
-                                  style:
-                                      TextStyle().copyWith(color: Colors.grey),
+                            Center(
+                              child: CircleAvatar(
+                                backgroundColor: secondaryColor,
+                                child: Icon(
+                                  Icons.person_outline,
+                                  size: 50,
                                 ),
-                              ],
-                            ),
-                            Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Firstname:"),
-                                Text(
-                                  firstname,
-                                  style: TextStyle().copyWith(color: lightGrey),
-                                )
-                              ],
+                                radius: 50,
+                              ),
                             ),
                             SizedBox(
                               height: 10,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Lastname:"),
-                                Text(lastname,
-                                    style:
-                                        TextStyle().copyWith(color: lightGrey))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(40.0),
-                                    color: offWhite,
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: lightGrey,
-                                      size: 17.0,
-                                    ),
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => editProfile);
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20.0,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  "Project Account Details",
-                                  style: TextStyle().copyWith(
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                            Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Name: "),
-                                Expanded(
-                                  child: Text(
-                                    accName,
-                                    style:
-                                        TextStyle().copyWith(color: lightGrey),
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.right,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Number: "),
-                                Text(accNo,
-                                    style:
-                                        TextStyle().copyWith(color: lightGrey))
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Bank: "),
-                                Expanded(
-                                    child: Text(
-                                  accBank,
-                                  style: TextStyle().copyWith(color: lightGrey),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.right,
-                                ))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                currentProjectBox.get(0).owner ==
-                                        userBox.get(0).userId
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                            color: offWhite,
-                                            borderRadius:
-                                                BorderRadius.circular(30)),
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.edit,
-                                            color: lightGrey,
-                                            size: 18,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, "/account");
-                                          },
-                                        ),
-                                      )
-                                    : SizedBox()
-                              ],
-                            ),
+                            Text(email),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 43,
-                        decoration: BoxDecoration(
-                          color: red,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: FlatButton.icon(
-                          onPressed: () => user.signOut(context, email),
-                          icon: Icon(
-                            Icons.power_settings_new,
-                            color: plainWhite,
-                          ),
-                          label: Text(
-                            "Sign Out",
-                            style: TextStyle().copyWith(color: plainWhite),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                        decoration: _containerDecor,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 40.0, vertical: 20),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    "Details",
+                                    style: TextStyle()
+                                        .copyWith(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Firstname:"),
+                                  Text(
+                                    firstname,
+                                    style:
+                                        TextStyle().copyWith(color: lightGrey),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Lastname:"),
+                                  Text(lastname,
+                                      style: TextStyle()
+                                          .copyWith(color: lightGrey))
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(40.0),
+                                      color: offWhite,
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: lightGrey,
+                                        size: 17.0,
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => editProfile);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Project Account Details",
+                                    style: TextStyle().copyWith(
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Name: "),
+                                  Expanded(
+                                    child: Text(
+                                      accName,
+                                      style: TextStyle()
+                                          .copyWith(color: lightGrey),
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Number: "),
+                                  Text(accNo,
+                                      style: TextStyle()
+                                          .copyWith(color: lightGrey))
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Bank: "),
+                                  Expanded(
+                                      child: Text(
+                                    accBank,
+                                    style:
+                                        TextStyle().copyWith(color: lightGrey),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    textAlign: TextAlign.right,
+                                  ))
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  currentProjectBox.get(0).owner ==
+                                          userBox.get(0).userId
+                                      ? Container(
+                                          decoration: BoxDecoration(
+                                              color: offWhite,
+                                              borderRadius:
+                                                  BorderRadius.circular(30)),
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.edit,
+                                              color: lightGrey,
+                                              size: 18,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, "/account");
+                                            },
+                                          ),
+                                        )
+                                      : SizedBox()
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: FlatButton.icon(
+                            onPressed: () => user.signOut(context, email),
+                            icon: Icon(
+                              Icons.power_settings_new,
+                              color: plainWhite,
+                            ),
+                            label: Text(
+                              "Sign Out",
+                              style: TextStyle().copyWith(
+                                color: plainWhite,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

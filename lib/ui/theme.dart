@@ -4,30 +4,33 @@ import 'package:project_view/ui/colors.dart';
 ThemeData primaryTheme = new ThemeData(
   scaffoldBackgroundColor: Colors.white,
   accentColor: Colors.pinkAccent,
+  fontFamily: "Gilroy",
   appBarTheme: AppBarTheme(
       elevation: 0,
       centerTitle: true,
-      color: Colors.indigo[500],
+      color: primaryColor,
       iconTheme: IconThemeData(color: Colors.white),
       textTheme: TextTheme(
         headline6: TextStyle(
-          color: Colors.indigo[500],
+          color: primaryColor,
           fontSize: 25,
-          fontFamily: 'SFProText',
         ),
       )),
   textTheme: TextTheme(
       headline6: TextStyle(fontSize: 20),
       bodyText2: TextStyle(
-          fontSize: 20, fontFamily: "SFProText", color: darkTextColor),
+        fontSize: 20,
+        color: darkTextColor,
+      ),
       bodyText1: TextStyle(
         fontSize: 20,
-        fontFamily: "SFProText",
       ),
       subtitle1: TextStyle(fontSize: 20),
       caption: TextStyle(fontSize: 12),
       overline: TextStyle(fontSize: 18),
-      button: TextStyle(fontSize: 20, fontFamily: "SFProText")),
+      button: TextStyle(
+        fontSize: 20,
+      )),
   tabBarTheme: TabBarTheme(
       labelStyle: TextStyle(fontWeight: FontWeight.bold),
       labelColor: Colors.grey[700],
@@ -35,7 +38,6 @@ ThemeData primaryTheme = new ThemeData(
   dialogTheme: DialogTheme(
       elevation: 0,
       titleTextStyle: TextStyle(
-        fontFamily: "SFProText",
         color: Colors.grey[900],
         fontSize: 25,
       )),

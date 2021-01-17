@@ -55,9 +55,6 @@ class _ProjectViewState extends State<ProjectView> {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: primaryColor, systemNavigationBarColor: primaryColor));
-
     // initialize config holding user settings
     appConfig.init();
     // check if user is a first time user
