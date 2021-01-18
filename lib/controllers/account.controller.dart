@@ -26,13 +26,14 @@ class Account {
     final project = currentProjectBox.get(0).id;
 
     final Map body = {
-      "accBank": accBank,
+      "acc_bank": accBank,
       "acc_no": accNo,
       "acc_name": accName,
       "user_id": userId.toString(),
       "project": project.toString(),
       "bank_code": bankCode
     };
+
     Response response = await post(join(baseUrl, "accounts"),
         headers: {"token": token}, body: body);
 

@@ -13,6 +13,7 @@ import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -46,6 +47,7 @@ class _ProfileState extends State<Profile> {
     if (response.statusCode == 201) {
       userBox.get(0).firstName = firstnameController.text;
       userBox.get(0).lastName = lastnameController.text;
+      setState(() {});
       Navigator.pop(context);
     } else {
       Map error = jsonDecode(response.body)["error"];
@@ -107,7 +109,9 @@ class _ProfileState extends State<Profile> {
               controller: firstnameController,
               validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
               decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
                 labelText: "Firstname",
+                hintText: "Firstname",
               ),
             ),
             SizedBox(
@@ -117,7 +121,9 @@ class _ProfileState extends State<Profile> {
               controller: lastnameController,
               validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
               decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
                 labelText: "Lastname",
+                hintText: "Lastname",
               ),
             )
           ],
@@ -302,7 +308,6 @@ class _ProfileState extends State<Profile> {
                                       accName,
                                       style: TextStyle()
                                           .copyWith(color: lightGrey),
-                                      overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.right,
                                     ),
                                   )
@@ -313,9 +318,12 @@ class _ProfileState extends State<Profile> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text("Number: "),
-                                  Text(accNo,
-                                      style: TextStyle()
-                                          .copyWith(color: lightGrey))
+                                  Expanded(
+                                    child: Text(accNo,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle()
+                                            .copyWith(color: lightGrey)),
+                                  )
                                 ],
                               ),
                               Row(
@@ -328,8 +336,7 @@ class _ProfileState extends State<Profile> {
                                     accBank,
                                     style:
                                         TextStyle().copyWith(color: lightGrey),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                    // overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.right,
                                   ))
                                 ],

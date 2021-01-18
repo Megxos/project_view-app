@@ -18,7 +18,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:project_view/screens/account.dart';
 import 'package:project_view/screens/profile.dart';
-import 'package:project_view/ui/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

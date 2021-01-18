@@ -21,7 +21,7 @@ final userBox = Hive.box<UserModel>("user");
 
 final Account account = Account();
 
-final accBox = Hive.box<AccountModel>("account");
+final _accBox = Hive.box<AccountModel>("account");
 
 final projectBox = Hive.box<ProjectModel>("project");
 
@@ -93,7 +93,7 @@ class User {
 
   void clearData(context) async {
     await userBox.clear();
-    await accBox.clear();
+    await _accBox.clear();
     await itemBox.clear();
     await projectBox.clear();
     await currentProjectBox.clear();

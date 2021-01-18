@@ -118,9 +118,9 @@ class Project {
       final Response response = await delete(
           join(baseUrl, "projects", "delete", project.id.toString()),
           headers: {"token": token});
-      print(response.body);
       if (response.statusCode != 200) throw Error();
     } catch (e) {
+      print(e);
       customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
     }
   }
