@@ -46,22 +46,25 @@ ThemeData primaryTheme = new ThemeData(
       actionTextColor: plainWhite,
       contentTextStyle: TextStyle(color: plainWhite, fontSize: 18)),
   inputDecorationTheme: InputDecorationTheme(
-      contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-      filled: true,
-      fillColor: offWhite,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(width: 0, color: Color(0xe3e9e9e0)),
+    contentPadding: EdgeInsets.all(20),
+    filled: true,
+    fillColor: offWhite,
+    floatingLabelBehavior: FloatingLabelBehavior.never,
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(width: 0, color: Color(0xe3e9e9e0)),
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(5.0),
+      borderSide: BorderSide(color: secondaryColor, width: 2),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(5.0),
+      borderSide: BorderSide(
+        color: primaryColor,
+        width: 2,
       ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5.0),
-        borderSide: BorderSide(color: secondaryColor, width: 2),
-      ),
-      focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: BorderSide(
-            color: primaryColor,
-            width: 2,
-          ))),
+    ),
+  ),
   canvasColor: Colors.white,
 );
 

@@ -13,6 +13,7 @@ import 'package:project_view/screens/completed.dart';
 import 'package:project_view/screens/join_project.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:project_view/ui/constants.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -78,16 +79,19 @@ class _HomeState extends State<Home> {
     }
   }
 
-  final Uri _emailUri =
-      Uri(scheme: "mailto", path: "melijah200@gmail.com", queryParameters: {
-    "subject": "Project View App",
-    "body": "I have been using Project View app and..."
-  });
+  final Uri _emailUri = Uri(
+    scheme: "mailto",
+    path: "melijah200@gmail.com",
+    queryParameters: {
+      "subject": "Project View App",
+      "body": "I have been using Project View app and..."
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
+      value: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: plainWhite,
         systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: plainWhite,
@@ -160,7 +164,63 @@ class _HomeState extends State<Home> {
                                     "assets/images/logo.png",
                                   ),
                                 ),
-                                applicationName: "Project View");
+                                applicationName: "Project View",
+                                children: [
+                                  Center(child: Text("Developed by:")),
+                                  Center(
+                                    child: FlatButton(
+                                        child: Text(
+                                          "Micah Elijah",
+                                          style: TextStyle().copyWith(
+                                            color: primaryColor,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          await launch(
+                                              "https://bit.ly/devmicah");
+                                        }),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: FlatButton(
+                                          onPressed: () async {
+                                            await _launchUri(
+                                                "https://projectview.herokuapp.com/privacy");
+                                          },
+                                          child: Text(
+                                            "privacy policy",
+                                            style: TextStyle().copyWith(
+                                              fontSize: 15,
+                                              color: primaryColor,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: FlatButton(
+                                          onPressed: () async {
+                                            await _launchUri(
+                                                "https://projectview.herokuapp.com/terms");
+                                          },
+                                          child: Text(
+                                            "terms of use",
+                                            style: TextStyle().copyWith(
+                                              fontSize: 15,
+                                              color: primaryColor,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ]);
                           },
                         ),
                       ],
@@ -199,7 +259,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         bottomNavigationBar: SizedBox(
-          height: 68,
+          height: bottomNavHeight,
           child: ValueListenableBuilder(
             valueListenable: _selectedIndex,
             builder: (_, value, __) => BottomNavigationBar(

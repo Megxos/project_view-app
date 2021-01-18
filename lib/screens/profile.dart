@@ -61,19 +61,21 @@ class _ProfileState extends State<Profile> {
       borderRadius: BorderRadius.circular(10),
       boxShadow: [
         BoxShadow(
-            color: Colors.grey[200],
-            spreadRadius: 1,
-            blurRadius: 1,
-            offset: Offset(0, 0))
+          color: Colors.grey[200],
+          spreadRadius: 1,
+          blurRadius: 1,
+          offset: Offset(0, 0),
+        )
       ]);
 
   @override
   Widget build(BuildContext context) {
     UserModel _defaultUserValue = UserModel(
-        email: "Not set",
-        firstName: "Not set",
-        lastName: "Not set",
-        token: "Not set");
+      email: "Not set",
+      firstName: "Not set",
+      lastName: "Not set",
+      token: "Not set",
+    );
 
     final currentUser = userBox.get(0, defaultValue: _defaultUserValue);
 
@@ -81,8 +83,11 @@ class _ProfileState extends State<Profile> {
     String firstname = currentUser.firstName;
     String lastname = currentUser.lastName;
 
-    AccountModel _defaultValue =
-        AccountModel(accBank: "Not set", accName: "Not set", accNo: "Not set");
+    AccountModel _defaultValue = AccountModel(
+      accBank: "Not set",
+      accName: "Not set",
+      accNo: "Not set",
+    );
 
     final accDetails = accBox.get(
         currentProjectBox.get(0, defaultValue: CurrentProject(id: 0)).id,
@@ -91,62 +96,62 @@ class _ProfileState extends State<Profile> {
     String accNo = accDetails.accNo;
     String accName = accDetails.accName;
 
-    final editProfile = BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-        child: AlertDialog(
-          title: Text("Edit Profile"),
-          content: Form(
-            key: _formkey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: firstnameController,
-                  validator: (value) =>
-                      value.length <= 3 ? "min of 3 chars" : null,
-                  decoration: InputDecoration(labelText: "Firstname"),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                TextFormField(
-                  controller: lastnameController,
-                  validator: (value) =>
-                      value.length <= 3 ? "min of 3 chars" : null,
-                  decoration: InputDecoration(labelText: "Lastname"),
-                )
-              ],
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.red,
-                size: 40,
+    final editProfile = AlertDialog(
+      title: Text("Edit Profile"),
+      content: Form(
+        key: _formkey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: firstnameController,
+              validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
+              decoration: InputDecoration(
+                labelText: "Firstname",
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
             ),
-            IconButton(
-              icon: Icon(
-                Icons.done,
-                color: Colors.green,
-                size: 40,
+            SizedBox(
+              height: 10.0,
+            ),
+            TextFormField(
+              controller: lastnameController,
+              validator: (value) => value.length <= 3 ? "min of 3 chars" : null,
+              decoration: InputDecoration(
+                labelText: "Lastname",
               ),
-              onPressed: () {
-                if (_formkey.currentState.validate()) {
-                  updateProfile();
-                }
-              },
-            ),
+            )
           ],
-        ));
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.close,
+            color: Colors.red,
+            size: 40,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.done,
+            color: Colors.green,
+            size: 40,
+          ),
+          onPressed: () {
+            if (_formkey.currentState.validate()) {
+              updateProfile();
+            }
+          },
+        ),
+      ],
+    );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: primaryColor,
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: plainWhite,
         systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: plainWhite,
       ),
@@ -161,16 +166,15 @@ class _ProfileState extends State<Profile> {
             ),
             elevation: 1,
             shadowColor: offWhite,
+            brightness: Brightness.light,
             leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios),
             )),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -371,18 +375,13 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 45,
-                          decoration: BoxDecoration(
+                          decoration: _containerDecor.copyWith(
                             color: red,
-                            borderRadius: BorderRadius.circular(5),
                           ),
-                          child: FlatButton.icon(
+                          child: FlatButton(
+                            padding: EdgeInsets.all(17),
                             onPressed: () => user.signOut(context, email),
-                            icon: Icon(
-                              Icons.power_settings_new,
-                              color: plainWhite,
-                            ),
-                            label: Text(
+                            child: Text(
                               "Sign Out",
                               style: TextStyle().copyWith(
                                 color: plainWhite,

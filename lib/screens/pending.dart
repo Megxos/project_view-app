@@ -6,6 +6,7 @@ import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
+import 'package:project_view/ui/constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_view/controllers/item.controller.dart';
 
@@ -13,8 +14,6 @@ class Pending extends StatefulWidget {
   @override
   _PendingState createState() => _PendingState();
 }
-
-List<ItemModel> rows = [];
 
 class _PendingState extends State<Pending> {
   final userBox = Hive.box<UserModel>("user");
@@ -29,7 +28,7 @@ class _PendingState extends State<Pending> {
   final itemController = TextEditingController();
   final priceController = TextEditingController();
   final quantityController = TextEditingController();
-  final int itemCount = rows.length;
+
   List<ItemModel> selectedItems;
 
   @override
@@ -94,14 +93,21 @@ class _PendingState extends State<Pending> {
 
   double navHeight = kBottomNavigationBarHeight;
 
-  AccountModel _defaultValue =
-      AccountModel(accBank: "Not set", accName: "Not set", accNo: "Not set");
+  AccountModel _defaultValue = AccountModel(
+    accBank: "Not set",
+    accName: "Not set",
+    accNo: "Not set",
+  );
   UserModel _defaultUserValue = UserModel(
-      email: "Not set",
-      firstName: "Not set",
-      lastName: "Not set",
-      token: "Not set");
-  CurrentProject _defaultProject = CurrentProject(id: 0, owner: -1);
+    email: "Not set",
+    firstName: "Not set",
+    lastName: "Not set",
+    token: "Not set",
+  );
+  CurrentProject _defaultProject = CurrentProject(
+    id: 0,
+    owner: -1,
+  );
 
   Widget build(BuildContext context) {
     int currentProjectId =
@@ -284,74 +290,11 @@ class _PendingState extends State<Pending> {
       ),
     );
 
-    // dialog to show donation account details
-    final donateDialog = AlertDialog(
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Account details"),
-            Divider(
-              color: appAccent,
-            )
-          ],
-        ),
-        content: Stack(overflow: Overflow.visible, children: [
-          Positioned(
-            top: -120,
-            right: 75,
-            child: InkResponse(
-                child: FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: CircleAvatar(
-                child: Icon(Icons.close),
-              ),
-            )),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Text("Bank: "),
-                  Text(
-                    accBank,
-                    style: TextStyle().copyWith(color: lightGrey),
-                  )
-                ],
-              ),
-              Divider(),
-              Row(
-                children: [
-                  Text("Account No: "),
-                  Text(
-                    accNo,
-                    style: TextStyle().copyWith(color: lightGrey),
-                  )
-                ],
-              ),
-              Divider(),
-              Row(
-                children: [
-                  Text("Account Name: "),
-                  Text(
-                    accName,
-                    style: TextStyle().copyWith(color: lightGrey),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ]));
-    int _bottomNavHeight = 67;
-    int _appBarHeight = 120;
     return Container(
       height: MediaQuery.of(context).size.height -
-          _bottomNavHeight -
-          _appBarHeight -
-          MediaQuery.of(context).padding.top,
+          bottomNavHeight -
+          appBarHeight -
+          2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -361,7 +304,7 @@ class _PendingState extends State<Pending> {
                 FocusScope.of(context).requestFocus(FocusNode());
               },
               child: RefreshIndicator(
-                displacement: 0,
+                displacement: 5.0,
                 onRefresh: () {
                   Future<void> refresh() async {
                     await item.getItems(currentProjectBox.get(0).code, context);
@@ -457,65 +400,65 @@ class _PendingState extends State<Pending> {
               ),
             ),
           ),
-          SizedBox(
-            height: 40,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-              child: Row(
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: currentProjectBox.listenable(),
-                    builder: (context, Box<CurrentProject> box, _) {
-                      return currentProjectBox
-                                  .get(0, defaultValue: _defaultProject)
-                                  .owner ==
-                              userBox
-                                  .get(0, defaultValue: _defaultUserValue)
-                                  .userId
-                          ? Expanded(
+          Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 8,
+            ),
+            child: Row(
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: currentProjectBox.listenable(),
+                  builder: (context, Box<CurrentProject> box, _) {
+                    return currentProjectBox
+                                .get(0, defaultValue: _defaultProject)
+                                .owner ==
+                            userBox
+                                .get(0, defaultValue: _defaultUserValue)
+                                .userId
+                        ? Expanded(
+                            child: OutlineButton(
+                            padding: EdgeInsets.all(15),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => itemDialog,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: Text(
+                              "Add New Item",
+                              style: TextStyle(
+                                color: Colors.indigo[500],
+                              ),
+                            ),
+                            borderSide: BorderSide(
+                              color: Colors.indigo[500],
+                              width: 3,
+                            ),
+                          ))
+                        : Expanded(
+                            child: ButtonTheme(
                               child: GestureDetector(
-                              child: OutlineButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => itemDialog);
-                                },
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                child: Text("Add New Item",
-                                    style:
-                                        TextStyle(color: Colors.indigo[500])),
-                                borderSide: BorderSide(
-                                  color: Colors.indigo[500],
-                                  width: 3,
-                                ),
-                              ),
-                            ))
-                          : Expanded(
-                              child: ButtonTheme(
-                                child: GestureDetector(
-                                  child: FlatButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, "/profile");
-                                    },
-                                    child: Text(
-                                      "Make A Donation",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    color: primaryColor,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 0, vertical: 8.0),
+                                child: FlatButton(
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, "/profile"),
+                                  child: Text(
+                                    "Make A Donation",
+                                    style: TextStyle(color: Colors.white),
                                   ),
+                                  color: primaryColor,
+                                  padding: EdgeInsets.all(16),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                buttonColor: Colors.indigo[500],
                               ),
-                            );
-                    },
-                  )
-                ],
-              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              buttonColor: Colors.indigo[500],
+                            ),
+                          );
+                  },
+                )
+              ],
             ),
           )
         ],

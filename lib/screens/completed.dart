@@ -4,6 +4,8 @@ import 'package:project_view/models/completed.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_view/controllers/item.controller.dart';
 import 'package:project_view/models/current_project.dart';
+import 'package:project_view/controllers/item.controller.dart';
+import 'package:project_view/ui/constants.dart';
 
 final completedItemBox = Hive.box<CompletedItem>("completed");
 final currentProjectBox = Hive.box<CurrentProject>("current_project");
@@ -11,13 +13,9 @@ final currentProjectBox = Hive.box<CurrentProject>("current_project");
 class Completed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    int topBarHeight = 120;
-    int bottomNavHeight = 68;
     return Container(
-      height: MediaQuery.of(context).size.height -
-          bottomNavHeight -
-          topBarHeight -
-          MediaQuery.of(context).padding.top,
+      height:
+          MediaQuery.of(context).size.height - appBarHeight - bottomNavHeight,
       child: RefreshIndicator(
         displacement: 0,
         onRefresh: () {

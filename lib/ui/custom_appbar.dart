@@ -9,6 +9,7 @@ import 'package:project_view/ui/colors.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_view/controllers/project.controller.dart';
 import 'package:share/share.dart';
+import 'package:project_view/ui/constants.dart';
 
 class CustomAppBar extends StatefulWidget {
   @override
@@ -74,7 +75,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 143.0,
+      height: appBarHeight,
       key: _containerKey,
       decoration: BoxDecoration(
         color: plainWhite,
@@ -112,12 +113,20 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       },
                     ),
                   ),
-                  Text(
-                    "Project View",
-                    style: TextStyle().copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                        fontSize: 22),
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 40,
+                        child: Image.asset("assets/images/logo.png"),
+                      ),
+                      Text(
+                        "Project View",
+                        style: TextStyle().copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -156,20 +165,19 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           isExpanded: true,
                           elevation: 4,
                           style: TextStyle().copyWith(
-                            color: primaryColor,
                             fontSize: 18,
                           ),
                           // dropdownColor: primaryColor,
                           icon: Icon(
                             Icons.keyboard_arrow_down,
-                            color: primaryColor,
                           ),
                           hint: Align(
-                            child: Text(dropDownText.value,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                )),
+                            child: Text(
+                              dropDownText.value,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             alignment: Alignment.centerLeft,
                           ),
                           onChanged: (ProjectModel project) {

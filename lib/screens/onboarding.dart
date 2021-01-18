@@ -63,9 +63,8 @@ class OnBoarding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: primaryColor,
-        statusBarBrightness: Brightness.light,
         systemNavigationBarIconBrightness: Brightness.light,
         systemNavigationBarColor: secondaryColor,
       ),
