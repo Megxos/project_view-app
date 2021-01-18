@@ -43,11 +43,11 @@ class _SignUpState extends State<SignUp> {
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-          statusBarColor: plainWhite,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: plainWhite),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: plainWhite,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: plainWhite,
+      ),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: GestureDetector(

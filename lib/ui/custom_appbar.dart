@@ -42,10 +42,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void _shareProject(int code, String project) {
     Navigator.pop(context);
     try {
-      Share.share("Hey there! please use the code $code to join my project",
-          subject: "Join My Project - $project");
+      Share.share(
+        "Hey there! please use the code $code to join my project - $project",
+        subject: "Join My Project - $project",
+      );
     } catch (e) {
-      customAlert.showAlert(isSuccess: false, msg: e);
+      customAlert.showAlert(isSuccess: false, msg: "Cannot share");
     }
   }
 
@@ -72,7 +74,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120.0,
+      height: 143.0,
       key: _containerKey,
       decoration: BoxDecoration(
         color: plainWhite,
@@ -80,7 +82,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       ),
       child: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+          padding: EdgeInsets.fromLTRB(5, 10, 5, 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -130,8 +132,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           ),
                         ]),
                     child: IconButton(
-                      icon: Icon(Icons.account_circle_outlined,
-                          color: plainWhite),
+                      icon: Icon(
+                        Icons.person,
+                        color: plainWhite,
+                      ),
                       onPressed: () => Navigator.pushNamed(context, "/profile"),
                       padding: EdgeInsets.zero,
                     ),

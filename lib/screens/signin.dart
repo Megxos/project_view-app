@@ -45,11 +45,11 @@ class _SigninState extends State<Signin> {
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-          statusBarColor: plainWhite,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: plainWhite),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: plainWhite,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: plainWhite,
+      ),
       child: Scaffold(
         body: GestureDetector(
           onTap: () {

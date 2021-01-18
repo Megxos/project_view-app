@@ -11,7 +11,7 @@ final currentProjectBox = Hive.box<CurrentProject>("current_project");
 class Completed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    int topBarHeight = 100;
+    int topBarHeight = 120;
     int bottomNavHeight = 68;
     return Container(
       height: MediaQuery.of(context).size.height -

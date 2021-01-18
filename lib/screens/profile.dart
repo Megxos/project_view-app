@@ -145,11 +145,11 @@ class _ProfileState extends State<Profile> {
         ));
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-          statusBarColor: plainWhite,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: offWhite),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: primaryColor,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: plainWhite,
+      ),
       child: Scaffold(
         backgroundColor: offWhite,
         appBar: AppBar(
@@ -170,7 +170,6 @@ class _ProfileState extends State<Profile> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height,
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,7 +187,8 @@ class _ProfileState extends State<Profile> {
                               child: CircleAvatar(
                                 backgroundColor: secondaryColor,
                                 child: Icon(
-                                  Icons.person_outline,
+                                  Icons.person,
+                                  color: plainWhite,
                                   size: 50,
                                 ),
                                 radius: 50,
@@ -202,12 +202,14 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 20,
                       ),
                       Container(
                         decoration: _containerDecor,
                         padding: EdgeInsets.symmetric(
-                            horizontal: 40.0, vertical: 20),
+                          horizontal: 40.0,
+                          vertical: 20,
+                        ),
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
@@ -361,6 +363,9 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                   Row(
                     children: [

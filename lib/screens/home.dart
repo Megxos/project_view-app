@@ -73,12 +73,13 @@ class _HomeState extends State<Home> {
     try {
       await launch(url.toString());
     } catch (e) {
+      print(e);
       customAlert.showAlert(isSuccess: false, msg: "Could not open link");
     }
   }
 
   final Uri _emailUri =
-      Uri(scheme: "mainto", path: "melijah200@gmail.com", queryParameters: {
+      Uri(scheme: "mailto", path: "melijah200@gmail.com", queryParameters: {
     "subject": "Project View App",
     "body": "I have been using Project View app and..."
   });
@@ -86,11 +87,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-          statusBarColor: plainWhite,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: plainWhite),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: plainWhite,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: plainWhite,
+      ),
       child: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(

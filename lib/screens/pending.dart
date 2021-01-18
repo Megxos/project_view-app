@@ -345,11 +345,12 @@ class _PendingState extends State<Pending> {
             ],
           ),
         ]));
-
+    int _bottomNavHeight = 67;
+    int _appBarHeight = 120;
     return Container(
       height: MediaQuery.of(context).size.height -
-          67 -
-          100 -
+          _bottomNavHeight -
+          _appBarHeight -
           MediaQuery.of(context).padding.top,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
