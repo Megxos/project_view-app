@@ -1,9 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:project_view/ui/colors.dart';
 import 'package:project_view/controllers/project.controller.dart';
+import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/progress_indicator.dart';
 
 class JoinProject extends StatefulWidget {
@@ -20,8 +18,10 @@ class _JoinProjectState extends State<JoinProject> {
       color: plainWhite, border: Border.all(color: appAccent, width: 2));
 
   void joinProject() async {
-    progressIndicator.loading(context: context, text: "Joining Project");
-    await project.joinProject(_codeController.text, context);
+    if (_formKey.currentState.validate()) {
+      progressIndicator.loading(context: context, text: "Joining Project");
+      await project.joinProject(_codeController.text, context);
+    }
   }
 
   @override
@@ -96,12 +96,7 @@ class _JoinProjectState extends State<JoinProject> {
             color: Colors.green,
             size: 40,
           ),
-          onPressed: () {
-            if (_formKey.currentState.validate()) {
-              print(_codeController.text);
-              joinProject();
-            }
-          },
+          onPressed: joinProject,
         ),
       ],
     );

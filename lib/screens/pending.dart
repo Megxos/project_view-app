@@ -1,14 +1,15 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:project_view/controllers/item.controller.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/constants.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_view/controllers/item.controller.dart';
 
 class Pending extends StatefulWidget {
   @override
@@ -110,15 +111,6 @@ class _PendingState extends State<Pending> {
   );
 
   Widget build(BuildContext context) {
-    int currentProjectId =
-        currentProjectBox.get(0, defaultValue: _defaultProject).id;
-    String accBank =
-        accBox.get(currentProjectId, defaultValue: _defaultValue).accBank;
-    String accName =
-        accBox.get(currentProjectId, defaultValue: _defaultValue).accName;
-    String accNo =
-        accBox.get(currentProjectId, defaultValue: _defaultValue).accNo;
-
     // function to manage selected items
     final actionSnackBar = SnackBar(
       elevation: 0,
@@ -145,7 +137,7 @@ class _PendingState extends State<Pending> {
               FlatButton.icon(
                   onPressed: () {
                     markComplete();
-                    Scaffold.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   },
                   icon: Icon(Icons.done),
                   label: Text("Mark as complete"))
@@ -418,7 +410,7 @@ class _PendingState extends State<Pending> {
                                 .userId
                         ? Expanded(
                             child: OutlineButton(
-                            padding: EdgeInsets.all(15),
+                            padding: EdgeInsets.all(9),
                             onPressed: () => showDialog(
                               context: context,
                               builder: (context) => itemDialog,
@@ -448,7 +440,7 @@ class _PendingState extends State<Pending> {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   color: primaryColor,
-                                  padding: EdgeInsets.all(16),
+                                  padding: EdgeInsets.all(10),
                                 ),
                               ),
                               shape: RoundedRectangleBorder(

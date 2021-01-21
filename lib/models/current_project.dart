@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:project_view/controllers/item.controller.dart';
+import 'package:project_view/ui/custom_alerts.dart';
+
 part 'current_project.g.dart';
 
 CurrentProject currentProjectModel = CurrentProject();
@@ -19,9 +21,13 @@ class CurrentProject {
   CurrentProject({this.id, this.name, this.owner, this.code});
 
   addProject(CurrentProject project, BuildContext context) async {
-    final currentProjectBox = Hive.box<CurrentProject>("current_project");
+    try {
+      final currentProjectBox = Hive.box<CurrentProject>("current_project");
 
-    currentProjectBox.put(0, project);
-    await item.getItems(currentProjectBox.get(0).code, context);
+      currentProjectBox.put(0, project);
+      await item.getItems(currentProjectBox.get(0).code, context);
+    } catch (exception, stackTrace) {
+      customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
+    }
   }
 }

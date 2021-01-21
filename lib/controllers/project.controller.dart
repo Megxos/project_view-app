@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'package:project_view/models/account.dart';
+
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
+import 'package:project_view/models/account.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
 import 'package:project_view/ui/custom_alerts.dart';
 import 'package:project_view/ui/progress_indicator.dart';
-import 'package:flutter/material.dart';
 
 Project project = Project();
 
@@ -86,6 +87,8 @@ class Project {
       Navigator.pop(context);
       return response.statusCode;
     } catch (e) {
+      print(e);
+      Navigator.pop(context);
       customAlert.showAlert(isSuccess: false, msg: "Something went wrong");
     }
   }

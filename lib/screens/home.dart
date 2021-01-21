@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_view/controllers/user.controller.dart';
 import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/user.dart';
-import 'package:project_view/screens/pending.dart';
-import 'package:project_view/screens/new_project.dart';
-import 'package:project_view/ui/colors.dart';
-import 'package:project_view/ui/custom_alerts.dart';
-import 'package:project_view/ui/custom_appbar.dart';
 import 'package:project_view/screens/completed.dart';
 import 'package:project_view/screens/join_project.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:project_view/screens/new_project.dart';
+import 'package:project_view/screens/pending.dart';
+import 'package:project_view/ui/colors.dart';
 import 'package:project_view/ui/constants.dart';
+import 'package:project_view/ui/custom_alerts.dart';
+import 'package:project_view/ui/custom_appbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   @override

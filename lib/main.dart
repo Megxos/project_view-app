@@ -1,4 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_view/models/account.dart';
 import 'package:project_view/models/app_config.dart';
 import 'package:project_view/models/completed.dart';
@@ -6,20 +12,17 @@ import 'package:project_view/models/current_project.dart';
 import 'package:project_view/models/item.dart';
 import 'package:project_view/models/project.dart';
 import 'package:project_view/models/user.dart';
-import 'package:project_view/screens/new_project.dart';
-import 'package:project_view/screens/home.dart';
-import 'package:project_view/ui/theme.dart';
-import 'package:flutter/services.dart';
-import 'package:project_view/screens/signup.dart';
-import 'package:project_view/screens/signin.dart';
-import 'package:project_view/screens/onboarding.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
 import 'package:project_view/screens/account.dart';
+import 'package:project_view/screens/home.dart';
+import 'package:project_view/screens/new_project.dart';
+import 'package:project_view/screens/onboarding.dart';
 import 'package:project_view/screens/profile.dart';
+import 'package:project_view/screens/signin.dart';
+import 'package:project_view/screens/signup.dart';
+import 'package:project_view/ui/theme.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
-void main() async {
+Future<Null> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final documentPath = await getApplicationDocumentsDirectory();
   Hive.init(join(documentPath.path, "models"));
@@ -37,7 +40,24 @@ void main() async {
   await Hive.openBox<CurrentProject>("current_project");
   await Hive.openBox<ItemModel>("item");
   await Hive.openBox<CompletedItem>("completed");
-  return runApp(ProjectView());
+
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://ed2e772d096e4c7082e203a0b4808855@o491277.ingest.sentry.io/5598921';
+  });
+
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    Zone.current.handleUncaughtError(details.exception, details.stack);
+  };
+
+  return runZonedGuarded<Future<void>>(() async {
+    runApp(ProjectView());
+  }, (Object exception, StackTrace stackTrace) async {
+    await Sentry.captureException(
+      exception,
+      stackTrace: stackTrace,
+    );
+  });
 }
 
 class ProjectView extends StatefulWidget {
@@ -52,8 +72,10 @@ class _ProjectViewState extends State<ProjectView> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     // initialize config holding user settings
     appConfig.init();
     // check if user is a first time user

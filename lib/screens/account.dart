@@ -83,11 +83,9 @@ class _AccountDetailsState extends State<AccountDetails> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
           child: Container(
-            color: Colors.white,
+            color: plainWhite,
             height: MediaQuery.of(context).size.height,
             child: ValueListenableBuilder(
               valueListenable: canFetch,
